@@ -7,13 +7,28 @@ A simple game of tic tac toe.
 ** Day 1
 Attempted to work on tarati-react.
 ** Day 2
-Edit the main page to display a tic-tac-toe grid (no state yet)
-
-    It’s OK if it looks ugly!
-
-Add all files to staging for commit
-Git Commit
-Git push to remote (github)
-Make a PR for initial-tic-tac-toe-display
-Merge into main
-Grab lunch
+:LOGBOOK:
+CLOCK: [2025-09-23 Tue 11:15]--[2025-09-23 Tue 11:40] =>  0:25
+CLOCK: [2025-09-23 Tue 10:00]--[2025-09-23 Tue 11:15] =>  1:15
+:END:
+*** TODO Display Board
+- [X] Style the main page so tic-tac-toe grid doesn’t look ugly
+  - [X] Use tailwind
+  - [X] What is CSS..? What is tailwind..?
+*** Create Gamestate
+:LOGBOOK:
+CLOCK: [2025-09-23 Tue 14:20]
+CLOCK: [2025-09-23 Tue 11:46]--[2025-09-23 Tue 12:39] =>  0:53
+:END:
+Pom 1: Created some states.
+Pom 2: Define the function makeMove.
+- [X] Now we need a model for how Tic Tac Toe works:
+  - [X] Create tictactoe.ts
+  - [X] Define a type GameState that can represent everything about a tic-tac-toe game
+- [X] Add a function called makeMove that takes a game + player + move location and returns a new GameState
+- [ ] Wire up GameState and makeMove into your React component
+- [ ] Add detection of winners + show celebration
+- [ ] Add move validation (can’t make moves after a win)
+*** Questions
+- [ ] Don’t forget to do the readings for tomorrow
+- [ ] Don’t forget to write in #eod
