@@ -1,3 +1,19 @@
 #+title: Readme
 
 * Tic Tac Toe
+A simple game of tic tac toe.
+
+* History
+** Day 1
+Attempted to work on tarati-react.
+** Day 2
+Edit the main page to display a tic-tac-toe grid (no state yet)
+
+    It’s OK if it looks ugly!
+
+Add all files to staging for commit
+Git Commit
+Git push to remote (github)
+Make a PR for initial-tic-tac-toe-display
+Merge into main
+Grab lunch
