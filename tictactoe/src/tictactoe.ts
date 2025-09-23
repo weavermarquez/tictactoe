@@ -20,6 +20,7 @@ type GameState = {
   history: Array<Move>
 }
 
+type WinState = [boolean, Player]
 
 function nextPlayer (game: GameState): Player {
   switch (game.player) {
@@ -54,41 +55,80 @@ function updateBoard(board: Board, player: Player, target: Target): Array<Array<
   )
 }
 
-function matchVertical(board: Board): [boolean, winner] {
-  // there exists a winner
-  // transpose?
-  //
-  // 0,0  1,0  2,0
-  //
-  // 0,1  1,1  2,1
-  //
-  // 0,2  1,2  2,2
-}
-function matchHorizontal(): [boolean, winner] {
-  // if any of the rows are the same value AND that value is not '-'
-
-}
-function matchDiagonal(): [boolean, winner] {
-  // topleft/bottomright
-  // 0,0  1,1  2,2
-  //
-  // topright/bottomleft
-  // 0,2  1,1  2, 0
-
-
+function transpose(matrix) {
+  return matrix[0].map((col, c) => matrix.map((row, r) => matrix[r][c]));
 }
 
-function detectWinner(board: Board): [boolean, winner] {
-  // if history.length < 5 it's in progress.
+function allEqual (arr: Player[]) {
+  return arr.every(val => val === arr[0])
+}
 
-  // cross won
-  // circle won
-  // draw :: all 9 positions are filled AND no winner above.
-  //
+function matchVertical(board: Board): WinState {
+  const transposedBoard = transpose(board)
+  console.log("transposed", transposedBoard)
+
+  return transposedBoard.reduce((winState: WinState, row: Player[]): WinState => {
+    return winState[0] ?
+      winState // Propagate a true win-detection forward.
+      : [allEqual(row),
+        allEqual(row) ? row[0] : '-'] // base-case: there may be a winner.
+  }, [false, '-'])
+}
+
+
+function matchHorizontal(board: Board): WinState {
+  return board.reduce((winState: WinState, row: Player[]): WinState => {
+    return winState[0] ?
+      winState // Propagate a true win-detection forward.
+      : [allEqual(row),
+        allEqual(row) ? row[0] : '-'] // base-case: there may be a winner.
+  }, [false, '-'])
+}
+
+
+function matchDiagonal(board: Board): WinState {
+  const diagonals = [
+    [board[0][0], board[1][1], board[2][2]],
+    [board[0][2], board[1][1], board[2][0]]
+  ]
+
+  return diagonals.reduce((winState: WinState, row: Player[]): WinState => {
+    // predicate function. return true if there is a winner;
+    return winState[0] ?
+      winState // Propagate a win-detection forward.
+      : [allEqual(row), row[0]] // base-case: there may be a winner and if there is,
+  }, [false, '-'])
+}
+
+
+function detectWinner(board: Board, history: Array<Move>): WinState {
+  const MAX_HISTORY = 9
+
+  const winCheck = {
+    horizontal: matchHorizontal(board),
+    vertical: matchVertical(board),
+    diagonal: matchDiagonal(board),
+  }
+
+  if (winCheck.horizontal[0]){
+    console.log('checking horiz')
+    return winCheck.horizontal
+  } else if (winCheck.vertical[0]) {
+    console.log('checking vert')
+    return winCheck.vertical
+  } else if (winCheck.diagonal[0]) {
+    console.log('checking diag')
+    return winCheck.diagonal
+  } else {
+    console.log("draw or in progress")
+    return history.length == MAX_HISTORY ?
+      [true, '-']  // draw
+      : [false, '-'] // in progress
+  }
 }
 
 function makeMove(game: GameState, player: Player, target: Target): GameState {
-  console.log("player", player, "moved on", target)
+  const MAX_HISTORY = 9
 
   // validate the move: is target cell empty? is input player current player?
   if (cell(game.board, target) != '-') {
@@ -96,25 +136,32 @@ function makeMove(game: GameState, player: Player, target: Target): GameState {
     // Probably just return the current gamestate.
     return game
   }
-  if (game.player != player){
+  if (game.player != player && game.history.length < MAX_HISTORY){
     console.log('ERROR: Wrong Player!')
   }
 
   const currentMove: Move = {id: nextId(game), player, target}
 
+
   const newBoard = updateBoard(game.board, player, target)
+  const newHistory = [...game.history, currentMove]
+  const newWinState = detectWinner(newBoard, newHistory)
+
+  const newStatus: PlayStatus = newWinState[0] ?
+    'Complete'
+    : 'In progress'
+
 
   // update status and check for winner
   // switch players
   const nextGameState: GameState = {
     player: nextPlayer(game),
     board: updateBoard(game.board, player, target),
-    status: 'In progress', // TODO
-    winner: '-',
+    status: newStatus,
+    winner: newWinState[1],
     history: [...game.history, currentMove]
   }
-  // return new GameState(state, transition)
-  return game
+  return nextGameState
 }
 
 const emptyBoard: Board =
@@ -124,9 +171,23 @@ const emptyBoard: Board =
 
 
 const testBoard: Board =
-      [[ 'X', '-', '-' ],   // 0,0  0,1  0,2
-       [ 'X', 'X', '-' ],   // 1,0  1,1  1,2
-       [ '-', '-', '-' ],]; // 2,0  2,1  2,2
+      [[ 'O', 'X', 'O' ],   // 0,0  0,1  0,2
+       [ 'X', 'X', 'O' ],   // 1,0  1,1  1,2
+       [ 'X', 'O', 'X' ],]; // 2,0  2,1  2,2
+
+const drawGameHistory: Move[] = [
+  {id: 1, player: 'X', target: {row: 1, col: 1}},
+  {id: 2, player: 'O', target: {row: 0, col: 0}},
+  {id: 3, player: 'X', target: {row: 2, col: 0}},
+  {id: 4, player: 'O', target: {row: 0, col: 2}},
+  {id: 5, player: 'X', target: {row: 1, col: 0}},
+  {id: 6, player: 'O', target: {row: 1, col: 2}},
+  {id: 7, player: 'X', target: {row: 0, col: 1}},
+  {id: 8, player: 'O', target: {row: 2, col: 1}},
+  {id: 9, player: 'X', target: {row: 2, col: 2}}
+];
+
+console.log("winner check", detectWinner(testBoard, drawGameHistory))
 
 function newGame(): GameState {
   return {
