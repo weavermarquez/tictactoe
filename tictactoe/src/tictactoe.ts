@@ -22,8 +22,8 @@ type GameState = {
 
 type WinState = [boolean, Player]
 
-function nextPlayer (game: GameState): Player {
-  switch (game.player) {
+function nextPlayer (player: Player): Player {
+  switch (player) {
     case 'X':
       return 'O'
 
@@ -40,8 +40,11 @@ function nextId(game: GameState): number {
   return game.history.length + 1
 }
 
-function cell(board: Board, coord: Target): Player{
-  return board[coord.row][coord.col]
+function cell(board: Board, coord: Target): Player {
+  if (coord.row < 3 && coord.row >= 0 && coord.col < 3 && coord.col >= 0){
+    return board[coord.row][coord.col]
+  }
+  // TODO throw error
 }
 
 /*
@@ -55,8 +58,9 @@ function updateBoard(board: Board, player: Player, target: Target): Array<Array<
   )
 }
 
-function transpose(matrix) {
-  return matrix[0].map((col, c) => matrix.map((row, r) => matrix[r][c]));
+function transpose(matrix: any) {
+  return matrix[0].map((col: any[], c: number) =>
+    matrix.map((row: any[], r: number) => matrix[r][c]));
 }
 
 function allEqual (arr: Player[]) {
@@ -111,13 +115,10 @@ function detectWinner(board: Board, history: Array<Move>): WinState {
   }
 
   if (winCheck.horizontal[0]){
-    console.log('checking horiz')
     return winCheck.horizontal
   } else if (winCheck.vertical[0]) {
-    console.log('checking vert')
     return winCheck.vertical
   } else if (winCheck.diagonal[0]) {
-    console.log('checking diag')
     return winCheck.diagonal
   } else {
     console.log("draw or in progress")
@@ -155,7 +156,7 @@ function makeMove(game: GameState, player: Player, target: Target): GameState {
   // update status and check for winner
   // switch players
   const nextGameState: GameState = {
-    player: nextPlayer(game),
+    player: nextPlayer(game.player),
     board: updateBoard(game.board, player, target),
     status: newStatus,
     winner: newWinState[1],
@@ -170,28 +171,28 @@ const emptyBoard: Board =
        [ '-', '-', '-' ],]; // 2,0  2,1  2,2
 
 
-const testBoard: Board =
-      [[ 'O', 'X', 'O' ],   // 0,0  0,1  0,2
-       [ 'X', 'X', 'O' ],   // 1,0  1,1  1,2
-       [ 'X', 'O', 'X' ],]; // 2,0  2,1  2,2
+// const testBoard: Board =
+//       [[ 'O', 'X', 'O' ],   // 0,0  0,1  0,2
+//        [ 'X', 'X', 'O' ],   // 1,0  1,1  1,2
+//        [ 'X', 'O', 'X' ],]; // 2,0  2,1  2,2
 
-const drawGameHistory: Move[] = [
-  {id: 1, player: 'X', target: {row: 1, col: 1}},
-  {id: 2, player: 'O', target: {row: 0, col: 0}},
-  {id: 3, player: 'X', target: {row: 2, col: 0}},
-  {id: 4, player: 'O', target: {row: 0, col: 2}},
-  {id: 5, player: 'X', target: {row: 1, col: 0}},
-  {id: 6, player: 'O', target: {row: 1, col: 2}},
-  {id: 7, player: 'X', target: {row: 0, col: 1}},
-  {id: 8, player: 'O', target: {row: 2, col: 1}},
-  {id: 9, player: 'X', target: {row: 2, col: 2}}
-];
+// const drawGameHistory: Move[] = [
+//   {id: 1, player: 'X', target: {row: 1, col: 1}},
+//   {id: 2, player: 'O', target: {row: 0, col: 0}},
+//   {id: 3, player: 'X', target: {row: 2, col: 0}},
+//   {id: 4, player: 'O', target: {row: 0, col: 2}},
+//   {id: 5, player: 'X', target: {row: 1, col: 0}},
+//   {id: 6, player: 'O', target: {row: 1, col: 2}},
+//   {id: 7, player: 'X', target: {row: 0, col: 1}},
+//   {id: 8, player: 'O', target: {row: 2, col: 1}},
+//   {id: 9, player: 'X', target: {row: 2, col: 2}}
+// ];
 
-console.log("winner check", detectWinner(testBoard, drawGameHistory))
+// console.log("winner check", detectWinner(testBoard, drawGameHistory))
 
 function newGame(): GameState {
   return {
-    player: '-',
+    player: nextPlayer('-'),
     board: emptyBoard,
     status: 'In progress',
     winner: '-',

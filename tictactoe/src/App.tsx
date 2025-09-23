@@ -1,81 +1,71 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import { makeMove, newGame, type GameState } from './tictactoe'
+import { optimizeDeps } from 'vite'
+
+function Square(props) {
+  const id = ''.concat(props.r, props.c)
+  return (
+    <div
+      id={id}
+      key={id}
+      className='square w-33 h-13 p-10'
+      onClick={props.onSquareClick} >
+      {props.value}
+    </div>
+  )
+}
 
 function Game() {
-  // const [gamestate, setGamestate] = useState(null)
+  const [gamestate, setGamestate] = useState(newGame())
+  const player = gamestate.player
 
   // useEffect(() => {
-  //   const currentPlayer = "O"
-  //   const target = [1,1]
-  //   const newBoard = makeMove(gamestate, player, target)
+  //   console.log("Effect gamestate", gamestate)
   //   setGamestate(newBoard)
   // }, [])
-  const gamestate = newGame()
-  const newPlayer = "O"
-  const target = {row: 1, col: 1}
-  const newBoard = makeMove(gamestate, newPlayer, target)
+
+  function handleClick(row: number, col: number) {
+    console.log('player', player, 'row', row, 'and col', col)
+    setGamestate(makeMove(gamestate, player, {row, col}))
+  }
+
+  console.log(gamestate.history)
 
   return (
     <>
       <div id="game">
         <div id="board">
-          <div id="rows" className="flex-col">
-            <div id="rowA" className="flex">
-              <div id="A0" className="w-33">[]</div>
-              <div id="A1" className="w-33">[]</div>
-              <div id="A2" className="w-33">[]</div>
-            </div>
-            <div id="rowB" className="flex">
-              <div id="B0" className="w-33">[]</div>
-              <div id="B1" className="w-33">[]</div>
-              <div id="B2" className="w-33">[]</div>
-            </div>
-            <div id="rowC" className="flex">
-              <div id="C0" className="w-33">[]</div>
-              <div id="C1" className="w-33">[]</div>
-              <div id="C2" className="w-33">[]</div>
-            </div>
+          <div id='rows' className='flex-col'>
+            { gamestate.board.map((row, r) =>
+              <div key={'row'.concat(String(r))} className='flex'>
+                { gamestate.board[r].map((col, c) =>
+                  <Square value={col} r={r} c={c}
+                      onSquareClick={ () => handleClick(r, c)}
+                    />)}
+              </div>
+            ) }
           </div>
         </div>
-        <div id="status">Current Player: X</div>
+        <div id="status">{player ? 'Current Player:'.concat(player) : ''} </div>
+        <ol type='A'>
+          { gamestate.history.map(e =>
+            <li>{e.id}. Player {e.player} on {e.target.row},{e.target.col}</li>) }
+        </ol>
       </div>
     </>
   )
 }
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <>
       <div>
         <h1 id="title" className="font-bold underline">Tic Tac Toe</h1>
       </div>
       <Game />
-
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
   )
 }
