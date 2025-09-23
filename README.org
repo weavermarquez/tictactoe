@@ -29,12 +29,18 @@ Pom 2: Define the function makeMove.
 - [X] Add a function called makeMove that takes a game + player + move location and returns a new GameState
 
 *** Attach to visuals
-- [ ] Wire up GameState and makeMove into your React component
-- [ ] Add detection of winners + show celebration
-- [ ] Add move validation (can’t make moves after a win)
-
+:LOGBOOK:
+CLOCK: [2025-09-23 Tue 18:30]--[2025-09-23 Tue 19:45] =>  1:15
+CLOCK: [2025-09-23 Tue 16:45]--[2025-09-23 Tue 18:13] =>  1:28
+:END:
+- [X] Wire up GameState and makeMove into your React component
+- [X] Add detection of winners
+   bruhhhhhhhhhhhh.
+- [X] Add move validation (can’t make moves after a win)
+*** Questions
+- [X] Don’t forget to write in #eod
+** Day 3
+*** Polish from yesterday
+- [ ] show celebration
 - [ ] Modify error handling message dispatch for wrong player?
 - [ ] Modify error handling for wrong target to return current gamestate
-*** Questions
-- [ ] Don’t forget to do the readings for tomorrow
-- [ ] Don’t forget to write in #eod
