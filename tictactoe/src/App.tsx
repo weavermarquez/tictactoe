@@ -46,6 +46,11 @@ function Game() {
           </div>
         </div>
         <div id="status">{player ? 'Current Player:'.concat(player) : ''} </div>
+        <div id="status2">Game Status: {gamestate.status.type} </div>
+        <div id="status3">{gamestate.status.player ?
+          'There Is a Winner'
+          : ''
+        } </div>
         <ol type='A'>
           { gamestate.history.map(e =>
             <li key={e.id}>{e.id}. Player {e.player} on {e.target.row},{e.target.col}</li>) }
