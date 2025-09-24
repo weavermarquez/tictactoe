@@ -72,13 +72,42 @@ CLOCK: [2025-09-24 Wed 11:24]--[2025-09-24 Wed 11:49] =>  0:25
 - [X] Modify error handling for wrong target to return current gamestate
   - [X] i can leave this as is.
 
+*** Lunch
+*** Afternoon Tasks
+:LOGBOOK:
+CLOCK: [2025-09-24 Wed 15:00]
+:END:
+spin off to dev-server-client
 - [ ] Set up Vite-Express on your existing tic-tac-toe app
 - [ ] Modify bun run dev to run server.ts
+
+feat 1a: in-memory
 - [ ] Add a /game (GET) and /move (POST) endpoints
 - [ ] move makeMove to the server, manage the game state in-memory
+merge to server-setup
+
+feat 1b:
 - [ ] Use React Query and fetch to read and write game data via a server
+merge to server-setup
+
+
 - [ ] Goal State:
   - [ ] your game has identical functionality, but all game state is managed by the server
   - [ ] game state persists if you refresh the tab, but not if you restart the server
+merge to main
+
+spin off to dev-multi-game
+
+- [ ] Now we need to support multiple games.
+- [ ] Add game ID to the GameState model
+- [ ] Add game ID to /game and /move
+- [ ] Add a list of games: GET /games and a create game endpoint: /create
+- [ ] Now we need to allow a user to pick a game:
+  - [ ] Add a new "pick/create game" component that displays initially
+  - [ ] Once a game ID is selected, display the normal tic-tac-toe component
+- [ ] Goal State:
+  - [ ] your game allows users to join an existing game or start a new one
+  - [ ] each tic-tac-toe game functions as normal (detects winners, ties, etc.)
+  - [ ] states persist between chrome tab refreshes, but not server restarts
 
 ** Day 4
