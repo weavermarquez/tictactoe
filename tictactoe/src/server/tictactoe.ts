@@ -88,8 +88,9 @@ function makeMove(game: GameState, player: Player, target: Target): GameState {
     console.log('ERROR: Board already populated!')
     return game
   }
-  if (game.player != player && game.history.length < MAX_HISTORY){
+  if (game.player != player){
     console.log('ERROR: Wrong Player!')
+    return game
     // what to do? Reset game? return newGame()?
   }
 
