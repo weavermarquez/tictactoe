@@ -1,46 +1,34 @@
 type Player = 'X' | 'O' | '-';
-type PlayStatus = 'In progress' | 'Complete';
 type Board = Array<Array<Player>>
 
-type Target = {
-    row: number,
-    col: number
-  }
-type Move = {
-  id: number,
-  player: Player,
-  target: Target,
-}
+type Target = {row: number, col: number}
+type Move = {id: number, player: Player, target: Target,}
 
 type GameState = {
   player: Player,
   board: Board
-  status: PlayStatus,
-  winner: Player,
+  status: WinState
   history: Array<Move>
 }
 
-type WinState = [boolean, Player]
+type WinState = {type: 'winner', player: Player} | {type: 'draw'} | {type: 'ongoing'}
 
-function nextPlayer (game: GameState): Player {
-  switch (game.player) {
-    case 'X':
-      return 'O'
 
-    case 'O':
-      return 'X'
+function nextPlayer (player: Player): Player {
+  switch (player) {
+    case 'X': return 'O'
 
-    default:
-      return 'X'
+    case 'O': return 'X'
+
+    default: return 'X'
   }
 }
-
 
 function nextId(game: GameState): number {
   return game.history.length + 1
 }
 
-function cell(board: Board, coord: Target): Player{
+function cell(board: Board, coord: Target): Player {
   return board[coord.row][coord.col]
 }
 
@@ -55,110 +43,66 @@ function updateBoard(board: Board, player: Player, target: Target): Array<Array<
   )
 }
 
-function transpose(matrix) {
-  return matrix[0].map((col, c) => matrix.map((row, r) => matrix[r][c]));
-}
-
-function allEqual (arr: Player[]) {
-  return arr.every(val => val === arr[0])
-}
-
-function matchVertical(board: Board): WinState {
-  const transposedBoard = transpose(board)
-  console.log("transposed", transposedBoard)
-
-  return transposedBoard.reduce((winState: WinState, row: Player[]): WinState => {
-    return winState[0] ?
-      winState // Propagate a true win-detection forward.
-      : [allEqual(row),
-        allEqual(row) ? row[0] : '-'] // base-case: there may be a winner.
-  }, [false, '-'])
-}
-
-
-function matchHorizontal(board: Board): WinState {
-  return board.reduce((winState: WinState, row: Player[]): WinState => {
-    return winState[0] ?
-      winState // Propagate a true win-detection forward.
-      : [allEqual(row),
-        allEqual(row) ? row[0] : '-'] // base-case: there may be a winner.
-  }, [false, '-'])
-}
-
-
-function matchDiagonal(board: Board): WinState {
-  const diagonals = [
-    [board[0][0], board[1][1], board[2][2]],
-    [board[0][2], board[1][1], board[2][0]]
-  ]
-
-  return diagonals.reduce((winState: WinState, row: Player[]): WinState => {
-    // predicate function. return true if there is a winner;
-    return winState[0] ?
-      winState // Propagate a win-detection forward.
-      : [allEqual(row), row[0]] // base-case: there may be a winner and if there is,
-  }, [false, '-'])
-}
-
 
 function detectWinner(board: Board, history: Array<Move>): WinState {
-  const MAX_HISTORY = 9
+  const MAX_LENGTH = 9
 
-  const winCheck = {
-    horizontal: matchHorizontal(board),
-    vertical: matchVertical(board),
-    diagonal: matchDiagonal(board),
-  }
+  const patterns = [
+    //horizontals
+    [board[0][0], board[1][0], board[2][0]],
+    [board[0][1], board[1][1], board[2][1]],
+    [board[0][2], board[1][2], board[2][2]],
+    //verticals
+    [board[0][0], board[0][1], board[0][2]],
+    [board[1][0], board[1][1], board[1][2]],
+    [board[2][0], board[2][1], board[2][2]],
+    //diagonals
+    [board[0][0], board[1][1], board[2][2]],
+    [board[0][2], board[1][1], board[2][0]],
+  ];
 
-  if (winCheck.horizontal[0]){
-    console.log('checking horiz')
-    return winCheck.horizontal
-  } else if (winCheck.vertical[0]) {
-    console.log('checking vert')
-    return winCheck.vertical
-  } else if (winCheck.diagonal[0]) {
-    console.log('checking diag')
-    return winCheck.diagonal
+  function allEqual (arr: Player[]) {return arr.every(val => val === arr[0])}
+  const winPattern = patterns.find( pattern => (allEqual(pattern) && pattern[0] !== '-'))
+
+  if (winPattern) {
+    console.log("Found a winner!", winPattern[0])
+    return {type: 'winner', player: winPattern[0]}
+  } else if (history.length == MAX_LENGTH) {
+    return {type: 'draw'}
   } else {
-    console.log("draw or in progress")
-    return history.length == MAX_HISTORY ?
-      [true, '-']  // draw
-      : [false, '-'] // in progress
+    return {type: 'ongoing'}
   }
 }
 
 function makeMove(game: GameState, player: Player, target: Target): GameState {
   const MAX_HISTORY = 9
 
-  // validate the move: is target cell empty? is input player current player?
+  if (game.status.type == 'winner'){
+    return game
+  }
+  if (!(target.row < 3 && target.row >= 0 && target.col < 3 && target.col >= 0)){
+    console.log('ERROR: Malformed request')
+    return game
+  }
   if (cell(game.board, target) != '-') {
     console.log('ERROR: Board already populated!')
-    // Probably just return the current gamestate.
     return game
   }
   if (game.player != player && game.history.length < MAX_HISTORY){
     console.log('ERROR: Wrong Player!')
+    // what to do? Reset game? return newGame()?
   }
 
   const currentMove: Move = {id: nextId(game), player, target}
-
 
   const newBoard = updateBoard(game.board, player, target)
   const newHistory = [...game.history, currentMove]
   const newWinState = detectWinner(newBoard, newHistory)
 
-  const newStatus: PlayStatus = newWinState[0] ?
-    'Complete'
-    : 'In progress'
-
-
-  // update status and check for winner
-  // switch players
   const nextGameState: GameState = {
-    player: nextPlayer(game),
+    player: nextPlayer(game.player),
     board: updateBoard(game.board, player, target),
-    status: newStatus,
-    winner: newWinState[1],
+    status: newWinState,
     history: [...game.history, currentMove]
   }
   return nextGameState
@@ -170,31 +114,11 @@ const emptyBoard: Board =
        [ '-', '-', '-' ],]; // 2,0  2,1  2,2
 
 
-const testBoard: Board =
-      [[ 'O', 'X', 'O' ],   // 0,0  0,1  0,2
-       [ 'X', 'X', 'O' ],   // 1,0  1,1  1,2
-       [ 'X', 'O', 'X' ],]; // 2,0  2,1  2,2
-
-const drawGameHistory: Move[] = [
-  {id: 1, player: 'X', target: {row: 1, col: 1}},
-  {id: 2, player: 'O', target: {row: 0, col: 0}},
-  {id: 3, player: 'X', target: {row: 2, col: 0}},
-  {id: 4, player: 'O', target: {row: 0, col: 2}},
-  {id: 5, player: 'X', target: {row: 1, col: 0}},
-  {id: 6, player: 'O', target: {row: 1, col: 2}},
-  {id: 7, player: 'X', target: {row: 0, col: 1}},
-  {id: 8, player: 'O', target: {row: 2, col: 1}},
-  {id: 9, player: 'X', target: {row: 2, col: 2}}
-];
-
-console.log("winner check", detectWinner(testBoard, drawGameHistory))
-
 function newGame(): GameState {
   return {
-    player: '-',
+    player: nextPlayer('-'),
     board: emptyBoard,
-    status: 'In progress',
-    winner: '-',
+    status: {type: 'ongoing'},
     history: []
   }
 }
