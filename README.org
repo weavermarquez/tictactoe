@@ -58,12 +58,13 @@ make sure to activate docsets before using dash-doc features?
 
 *** Morning Tasks
 :LOGBOOK:
-CLOCK: [2025-09-24 Wed 11:24]
+CLOCK: [2025-09-24 Wed 11:24]--[2025-09-24 Wed 11:49] =>  0:25
 :END:
-- [-] show celebration
+- [X] show celebration
   In order to show a celebration, we already have a console displaying.
   - [X] So I just need to add a display on the html
-  - [ ] and then separate out the display text to an independent component
+  - [X] and then separate out the display text to an independent component
+  - [X] Merge Current Player message into Celebration too
 
 - [ ] Modify error handling message dispatch for wrong player?
   - [ ] This is not too relevant at the moment, But I can look up the proper "error display" / throw exception display feature.
