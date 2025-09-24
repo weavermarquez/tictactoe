@@ -2,13 +2,30 @@ import { useState, useEffect } from 'react'
 import { makeMove, newGame, type GameState } from '../server/tictactoe'
 import Celebration from './Celebration.tsx'
 import Square from './Square.tsx'
+import { QueryClient, QueryClientProvider, useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import axios from 'axios'
+
+const BASE_URL = 'http://localhost:3000/';
 
 function Game() {
   const [gamestate, setGamestate] = useState(newGame())
   const player = gamestate.player
 
+  useEffect(() => {
+    axios.get(BASE_URL.concat('game'))
+      .then( res => {
+        console.log(res.data)
+        setGamestate(res.data)
+      })
+  }, [])
+
   function handleClick(row: number, col: number) {
-    setGamestate(makeMove(gamestate, player, {row, col}))
+    axios.post(BASE_URL.concat('move'), {
+      player: player,
+      target: {row, col}
+    }).then( res => {
+      setGamestate(res.data)
+      })
   }
 
   return (
