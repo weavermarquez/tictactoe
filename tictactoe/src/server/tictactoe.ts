@@ -124,4 +124,4 @@ function newGame(): GameState {
   }
 }
 
-export { type GameState, makeMove, newGame }
+export { type GameState, type Player, type Target, makeMove, newGame }
