@@ -85,6 +85,7 @@ spin off to dev-express-server
   - Then I modified package.json to run
     : "dev": "bun run --watch ./src/server/main.ts"
     And since that particular script has ViteExpress in, it re-routes all un-specified routes to the client code that would normally run when you call ~vite~
+- [ ] Separate code into =src/client= and =src/server= sub-folders
 
 feat 1a: in-memory
 - [ ] Add a /game (GET) and /move (POST) endpoints

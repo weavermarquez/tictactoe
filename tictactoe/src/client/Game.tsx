@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { makeMove, newGame, type GameState } from './tictactoe'
+import { makeMove, newGame, type GameState } from '../server/tictactoe'
 import Celebration from './Celebration.tsx'
 import Square from './Square.tsx'
 
