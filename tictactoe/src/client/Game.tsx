@@ -10,20 +10,41 @@ import gameService from '../services/request'
 const BASE_URL = 'http://localhost:3000/';
 
 function Game() {
-  const [gamestate, setGamestate] = useState(newGame())
-  const player = gamestate.player
+  const queryClient = useQueryClient()
 
-  useEffect(() => {
-    gameService
-      .getGame()
-      .then( game => setGamestate(game) )
-  }, [])
+  const { isPending, error, data } = useQuery({
+    queryKey: ['game'],
+    queryFn: gameService.getGame
+  })
+
+  // const mutation = useMutation({
+  //   mutationFn: gameService.postMove,
+  //   onSuccess: () => {
+  //     // Invalidate and refetch
+  //     queryClient.invalidateQueries({ queryKey: ['game'] })
+  //   },
+  // })
+
+  // const [gamestate, setGamestate] = useState(newGame())
+  // const player = gamestate.player
+
+  // useEffect(() => {
+  //   gameService
+  //     .getGame()
+  //     .then( game => setGamestate(game) )
+  // }, [])
 
   function handleClick(row: number, col: number) {
     gameService
       .postMove(player, {row, col})
       .then( game => setGamestate(game) )
   }
+
+  if (isPending) return 'Loading...'
+
+  if (error) return 'An error has occurred: ' + error.message
+
+  const gamestate = data
 
   return (
     <>
