@@ -4,9 +4,9 @@
 A simple game of tic tac toe.
 
 * History
-** Day 1
+** Day 1 :ARCHIVE:
 Attempted to work on tarati-react.
-** Day 2
+** Day 2 Tic Tac Toe
 :LOGBOOK:
 CLOCK: [2025-09-23 Tue 11:15]--[2025-09-23 Tue 11:40] =>  0:25
 CLOCK: [2025-09-23 Tue 10:00]--[2025-09-23 Tue 11:15] =>  1:15
@@ -39,8 +39,46 @@ CLOCK: [2025-09-23 Tue 16:45]--[2025-09-23 Tue 18:13] =>  1:28
 - [X] Add move validation (can’t make moves after a win)
 *** Questions
 - [X] Don’t forget to write in #eod
-** Day 3
-*** Polish from yesterday
-- [ ] show celebration
+** Day 3 Express Server
+*** Docset Skills
+=SPC s k= lookup in docsets
+=SPC s K= lookup in all docsets
+
+=K= is always reliable =+lookup/documentation= aka =SPC c k=
+
+=SPC c d= lookup definition
+=SPC c D= lookup *references* (uses of symbol)
+- Also try =evil-goto-definition=
+
+=SPC s o= is lookup /online/. Queries the browser on high quality documentation sources ala =K=
+
+=g ;= and =g ,= are =evil-goto-last-change=
+
+make sure to activate docsets before using dash-doc features?
+
+*** Morning Tasks
+:LOGBOOK:
+CLOCK: [2025-09-24 Wed 11:24]--[2025-09-24 Wed 11:49] =>  0:25
+:END:
+- [X] show celebration
+  In order to show a celebration, we already have a console displaying.
+  - [X] So I just need to add a display on the html
+  - [X] and then separate out the display text to an independent component
+  - [X] Merge Current Player message into Celebration too
+
 - [ ] Modify error handling message dispatch for wrong player?
-- [ ] Modify error handling for wrong target to return current gamestate
+  - [ ] This is not too relevant at the moment, But I can look up the proper "error display" / throw exception display feature.
+
+- [X] Modify error handling for wrong target to return current gamestate
+  - [X] i can leave this as is.
+
+- [ ] Set up Vite-Express on your existing tic-tac-toe app
+- [ ] Modify bun run dev to run server.ts
+- [ ] Add a /game (GET) and /move (POST) endpoints
+- [ ] move makeMove to the server, manage the game state in-memory
+- [ ] Use React Query and fetch to read and write game data via a server
+- [ ] Goal State:
+  - [ ] your game has identical functionality, but all game state is managed by the server
+  - [ ] game state persists if you refresh the tab, but not if you restart the server
+
+** Day 4

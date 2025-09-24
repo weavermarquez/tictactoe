@@ -15,6 +15,31 @@ function Square(props) {
   )
 }
 
+function Celebration(props) {
+  const status = props.status
+  const currentPlayer = props.currentPlayer
+  const gameComplete = props.status.type == 'ongoing'
+  return (
+    <>
+      <div id="status">{
+        (() => {
+          switch (status.type) {
+            case 'ongoing':
+              return `Your move, player ${currentPlayer}`
+          break
+            case 'draw':
+              return "Hey, a draw! Let's say you both won. 🤗"
+          break
+            case 'winner':
+              return `🎉 Congratulations, player ${status.player}! 🎉`
+          }
+        })()
+        }
+      </div>
+    </>
+  )
+}
+
 function Game() {
   const [gamestate, setGamestate] = useState(newGame())
   const player = gamestate.player
@@ -45,7 +70,7 @@ function Game() {
             ) }
           </div>
         </div>
-        <div id="status">{player ? 'Current Player:'.concat(player) : ''} </div>
+        <Celebration currentPlayer = {gamestate.player} status={gamestate.status} />
         <ol type='A'>
           { gamestate.history.map(e =>
             <li key={e.id}>{e.id}. Player {e.player} on {e.target.row},{e.target.col}</li>) }
