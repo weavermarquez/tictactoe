@@ -8,10 +8,8 @@ function getGame(): Promise<GameState> {
     .then( res => res.data )
 }
 
-
-function postMove(player: Player, target: Target): Promise<GameState> {
-  return axios.post(BASE_URL.concat('move'), {player, target})
-  .then( res => res.data )
+function postMove(newMove: {player: Player, target: Target}) {
+  return axios.post(BASE_URL.concat('move'), newMove)
 }
 
 export default {

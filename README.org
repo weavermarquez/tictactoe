@@ -75,7 +75,7 @@ CLOCK: [2025-09-24 Wed 11:24]--[2025-09-24 Wed 11:49] =>  0:25
 *** Lunch
 *** Afternoon Tasks
 :LOGBOOK:
-CLOCK: [2025-09-24 Wed 17:40]
+CLOCK: [2025-09-24 Wed 17:40]--[2025-09-24 Wed 18:40] =>  1:00
 CLOCK: [2025-09-24 Wed 16:30]--[2025-09-24 Wed 17:31] =>  1:01
 CLOCK: [2025-09-24 Wed 15:25]--[2025-09-24 Wed 16:26] =>  1:01
 CLOCK: [2025-09-24 Wed 15:00]--[2025-09-24 Wed 15:25] =>  0:25
@@ -96,33 +96,39 @@ merge to server-setup
 
 feat 1b:
 [[file:~/Documents/org/30-fractal/convos/20250924--ttt-tanstack-react-query__gpt5.org][I laid out my step-by-step plan here.]]
-- [-] Use React Query and fetch to read and write game data via a server. Following the simple example, here's how I see the steps.
+- [X] Use React Query and fetch to read and write game data via a server. Following the simple example, here's how I see the steps.
   - [X] Implement something concrete
     - [X] Implement a straightforward axios get & post request to the server in =Game=
     - [X] Extract it to a separate =services= folder and import it to =Game=. Let's say it's ~getGame~ and ~postMove~
-  - [ ] Adapt it to react-query
-    - [ ] Create =queryClient= in =App=, wrap the =Game= in =QueryClientProvider=.
-    - [ ] in =Game=, ~const queryClient = useQueryClient~.
-      - [ ] For the get
+  - [X] Adapt it to react-query
+    - [X] Create =queryClient= in =App=, wrap the =Game= in =QueryClientProvider=.
+    - [X] in =Game=, ~const queryClient = useQueryClient~.
+      - [X] For the get
         : const query = useQuery({queryKey: ['game'], queryFn: getGame})
         - q :: But what is this querykey referring to? Is it an internal react-query variable, that react-query tracks behind the scenes to help manage async/server-sync difficulties? it's just a label for caching?
-      - [ ] For the post
-        #+begin_example js
-        const mutation = useMutation({
-          mutationFn: postMove,
-          onSuccess: () => {
-            // Invalidate and refetch
-            queryClient.invalidateQueries({ queryKey: ['game'] })
-          },
-        })
-        #+end_example
+    - [X] For the post
+            [[https://tanstack.com/query/latest/docs/framework/react/examples/offline?path=examples%2Freact%2Foffline%2Fsrc%2Fapi.ts][Look at this React example.]]
+      - [X] Modify ~postMove~ to have only one parameter containing all necessary data.
+      - Also, a mutationFn must return /a promise/ without a callback - but whose callback would be
+            : res => res.data
 
-      - [ ] Modify =Game='s JSX return content.... I'm not quite sure how to deal with that. It seems that from the example, we're replacing the functionality of =useState= and =useEffect= with =useQuery= instead.
-        - q :: What is this questionmark notation in  ~query.data?.map~ ? =query= is returned from ~useQuery~, so it seems to be a unique property? or is it built into javascript? I recall seeing something that used an exclamation mark as a part of the JS syntactical sugar, but I can't recall the details.
-        - I am using =gamestate= in three different div tags, which are each siblings and a child of the <div id="game". But I don't see a clear analogous situation in that simple example.
-          - =board= displaying the rows
-          - sending to Celebration
-          - displaying the history.
+      #+begin_example js
+      const mutation = useMutation({
+        mutationFn: () => axios.post('/move', {player, target}),
+        onSuccess: () => {
+          // Invalidate and refetch
+          queryClient.invalidateQueries({ queryKey: ['game'] })
+        },
+      })
+      #+end_example
+
+    - [X] Modify =Game='s JSX return content.... I'm not quite sure how to deal with that. It seems that from the example, we're replacing the functionality of =useState= and =useEffect= with =useQuery= instead.
+      - q :: What is this questionmark notation in  ~query.data?.map~ ? =query= is returned from ~useQuery~, so it seems to be a unique property? or is it built into javascript? I recall seeing something that used an exclamation mark as a part of the JS syntactical sugar, but I can't recall the details.
+      - I am using =gamestate= in three different div tags, which are each siblings and a child of the <div id="game". But I don't see a clear analogous situation in that simple example.
+        - =board= displaying the rows
+        - sending to Celebration
+        - displaying the history.
+      - [X] The answer is by /conditional rendering/ using the deconstructed values of =useQuery=.
 
 End of "morning"
 - [ ] Goal State:
