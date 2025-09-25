@@ -1,23 +1,56 @@
 //e.g server.js
+import crypto from "crypto"
 import express from "express";
 import ViteExpress from "vite-express";
-import { makeMove, newGame, type GameState } from './tictactoe'
+import { makeMove, initGame, type GameState } from './tictactoe'
 
 const app = express();
 app.use(express.json())
 
-let gamestate: GameState = newGame()
-console.log("Reset game state!", gamestate.board)
+let games: Map<string, GameState> = new Map()
 
 app.get("/message", (_, res) => res.send("Hello from express! Blah"));
+app.get("/games", (_, res) => res.send([...games.keys()]));
 
-app.get("/game", (_, res) => res.json(gamestate));
+app.post("/create", (_, res) => {
+  const newID = crypto.randomUUID()
+  console.log(newID)
+  if (games.has(newID)) {
+    res.status(500).end() // The unthinkable has happened
+  }
+  console.log("Generated game:", newID, games.get(newID)?.board)
+
+  games.set(newID, initGame(newID))
+  return res.status(201).json({gameID: newID})
+})
+
+// Expects a query parameter /game?gameID=<uuid>
+app.get("/game", (req, res) => {
+  const gameID: string = req.query.gameID
+
+  if (!gameID) {
+    return res.status(400).end()
+    // Malformed Request
+  }
+  if (!games.has(gameID)) {
+    return res.status(404).end()
+    // Game does not exist
+  }
+  return res.json(games.get(gameID))
+});
 
 app.post("/move", (req, res) => {
-  const userMove = req.body;
-  console.log("player", userMove.player, "moved at", userMove.target)
-  gamestate = makeMove(gamestate, userMove.player, userMove.target)
-  res.status(200).json(gamestate)
+  const {gameID, player, target} = req.body;
+  if (!games.has(gameID)) {
+    return res.status(404).end()
+    // Game does not exist
+  } else {
+    const gamestate = games.get(gameID)
+    console.log("game", gameID, "player", player, "moved at", target)
+
+    const newGamestate = makeMove(gamestate, player, target)
+    res.status(200).json(newGamestate)
+  }
 });
 
 

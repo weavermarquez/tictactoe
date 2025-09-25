@@ -3,12 +3,12 @@ import { type GameState, type Player, type Target} from '../server/tictactoe.ts'
 
 const BASE_URL = 'http://localhost:3000/';
 
-function getGame(): Promise<GameState> {
-  return axios.get(BASE_URL.concat('game'))
+function getGame(gameID: string): Promise<GameState> {
+  return axios.get(BASE_URL.concat('game?=', gameID))
     .then( res => res.data )
 }
 
-function postMove(newMove: {player: Player, target: Target}) {
+function postMove(newMove: {gameID: string, player: Player, target: Target}) {
   return axios.post(BASE_URL.concat('move'), newMove)
 }
 
