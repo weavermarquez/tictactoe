@@ -1,14 +1,37 @@
 import { useState, useEffect } from 'react'
-import { makeMove, newGame, type GameState } from './tictactoe'
+import { makeMove, newGame, type GameState } from '../server/tictactoe'
 import Celebration from './Celebration.tsx'
 import Square from './Square.tsx'
+import { QueryClient, QueryClientProvider, useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import axios from 'axios'
+import gameService from '../services/request'
+
 
 function Game() {
-  const [gamestate, setGamestate] = useState(newGame())
-  const player = gamestate.player
+  const queryClient = useQueryClient()
+
+  const { isPending, error, data } = useQuery({
+    queryKey: ['game'],
+    queryFn: gameService.getGame
+  })
+
+  const mutation = useMutation({
+    mutationFn: gameService.postMove,
+    onSuccess: () => {
+      // Invalidate and refetch
+      queryClient.invalidateQueries({ queryKey: ['game'] })
+    },
+  })
+
+
+  if (isPending) return 'Loading...'
+
+  if (error) return 'An error has occurred: ' + error.message
+
+  const gamestate = data
 
   function handleClick(row: number, col: number) {
-    setGamestate(makeMove(gamestate, player, {row, col}))
+    mutation.mutate({player: gamestate.player, target: {row: row, col: col}})
   }
 
   return (
