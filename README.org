@@ -131,27 +131,35 @@ feat 1b:
       - [X] The answer is by /conditional rendering/ using the deconstructed values of =useQuery=.
 
 End of "morning"
-- [ ] Goal State:
-  - [ ] your game has identical functionality, but all game state is managed by the server
-  - [ ] game state persists if you refresh the tab, but not if you restart the server
+- [X] Goal State:
+  - [X] your game has identical functionality, but all game state is managed by the server
+  - [X] game state persists if you refresh the tab, but not if you restart the server
 merge to main
 
-spin off to dev-multi-game
-
-- [ ] Now we need to support multiple games.
-- [ ] Add game ID to the GameState model
-- [ ] Add game ID to /game and /move
-- [ ] Add a list of games: GET /games and a create game endpoint: /create
-- [ ] Now we need to allow a user to pick a game:
-  - [ ] Add a new "pick/create game" component that displays initially
-  - [ ] Once a game ID is selected, display the normal tic-tac-toe component
-- [ ] Goal State:
-  - [ ] your game allows users to join an existing game or start a new one
-  - [ ] each tic-tac-toe game functions as normal (detects winners, ties, etc.)
-  - [ ] states persist between chrome tab refreshes, but not server restarts
 *** Questions
 
 - [X] q :: What is this questionmark notation in  ~query.data?.map~ ? =query= is returned from ~useQuery~, so it seems to be a unique property? or is it built into javascript? I recall seeing something that used an exclamation mark as a part of the JS syntactical sugar, but I can't recall the details.
   - Optional chaining ?. is JavaScript. It safely accesses a property that might be undefined/null. query.data?.map runs only if query.data exists. The exclamation you remember is TypeScript’s non-null assertion (value!), not JavaScript.
 
 ** Day 4
+:LOGBOOK:
+CLOCK: [2025-09-25 Thu 10:10]
+:END:
+
+- [ ] Now we need to support multiple games.
+  new feature branch: =dev-multigame-server=
+
+- [ ] Add game ID to the GameState model
+- [ ] Add game ID to /game and /move
+- [ ] Add a list of games: GET /games and a create game endpoint: /create
+  merge to main?
+
+- [ ] Now we need to allow a user to pick a game:
+  from main, new feature branch =dev-multigame-react=
+  - [ ] Add a new "pick/create game" component that displays initially
+  - [ ] Once a game ID is selected, display the normal tic-tac-toe component
+
+- [ ] Goal State:
+  - [ ] your game allows users to join an existing game or start a new one
+  - [ ] each tic-tac-toe game functions as normal (detects winners, ties, etc.)
+  - [ ] states persist between chrome tab refreshes, but not server restarts
