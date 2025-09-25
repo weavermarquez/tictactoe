@@ -5,6 +5,7 @@ type Target = {row: number, col: number}
 type Move = {id: number, player: Player, target: Target,}
 
 type GameState = {
+  gameID: string,
   player: Player,
   board: Board
   status: WinState
@@ -24,7 +25,7 @@ function nextPlayer (player: Player): Player {
   }
 }
 
-function nextId(game: GameState): number {
+function nextMoveId(game: GameState): number {
   return game.history.length + 1
 }
 
@@ -91,10 +92,10 @@ function makeMove(game: GameState, player: Player, target: Target): GameState {
   if (game.player != player){
     console.log('ERROR: Wrong Player!')
     return game
-    // what to do? Reset game? return newGame()?
+    // what to do? Reset game? return initGame()?
   }
 
-  const currentMove: Move = {id: nextId(game), player, target}
+  const currentMove: Move = {id: nextMoveId(game), player, target}
 
   const newBoard = updateBoard(game.board, player, target)
   const newHistory = [...game.history, currentMove]
@@ -115,7 +116,7 @@ const emptyBoard: Board =
        [ '-', '-', '-' ],]; // 2,0  2,1  2,2
 
 
-function newGame(): GameState {
+function initGame(): GameState {
   return {
     player: nextPlayer('-'),
     board: emptyBoard,
@@ -124,4 +125,4 @@ function newGame(): GameState {
   }
 }
 
-export { type GameState, type Player, type Target, makeMove, newGame }
+export { type GameState, type Player, type Target, makeMove, initGame}

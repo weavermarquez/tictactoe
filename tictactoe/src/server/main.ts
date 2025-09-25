@@ -1,13 +1,15 @@
 //e.g server.js
+import crypto from "crypto"
 import express from "express";
 import ViteExpress from "vite-express";
-import { makeMove, newGame, type GameState } from './tictactoe'
+import { makeMove, initGame, type GameState } from './tictactoe'
 
 const app = express();
 app.use(express.json())
 
-let gamestate: GameState = newGame()
+let gamestate: GameState = initGame()
 console.log("Reset game state!", gamestate.board)
+console.log("Generated an ID:", crypto.randomUUID())
 
 app.get("/message", (_, res) => res.send("Hello from express! Blah"));
 
