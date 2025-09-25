@@ -31,10 +31,17 @@ app.get("/game", (req, res) => {
 });
 
 app.post("/move", (req, res) => {
-  const userMove = req.body;
-  console.log("player", userMove.player, "moved at", userMove.target)
-  gamestate = makeMove(gamestate, userMove.player, userMove.target)
-  res.status(200).json(gamestate)
+  const {gameID, player, target} = req.body;
+  if (!games.has(gameID)) {
+    return res.status(404).end()
+    // Game does not exist
+  } else {
+    const gamestate = games.get(gameID)
+    console.log("game", gameID, "player", player, "moved at", target)
+
+    const newGamestate = makeMove(gamestate, player, target)
+    res.status(200).json(newGamestate)
+  }
 });
 
 

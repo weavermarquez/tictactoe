@@ -8,7 +8,7 @@ function getGame(gameID: string): Promise<GameState> {
     .then( res => res.data )
 }
 
-function postMove(newMove: {player: Player, target: Target}) {
+function postMove(newMove: {gameID: string, player: Player, target: Target}) {
   return axios.post(BASE_URL.concat('move'), newMove)
 }
 
