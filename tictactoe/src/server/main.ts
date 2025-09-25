@@ -8,12 +8,21 @@ const app = express();
 app.use(express.json())
 
 let games: Map<string, GameState> = new Map()
-const firstID = crypto.randomUUID()
-games.set(firstID, initGame(firstID))
-console.log("Generated game:", firstID, games.get(firstID)?.board)
-console.log(games.get(firstID))
 
 app.get("/message", (_, res) => res.send("Hello from express! Blah"));
+app.get("/games", (_, res) => res.send([...games.keys()]));
+
+app.post("/create", (_, res) => {
+  const newID = crypto.randomUUID()
+  console.log(newID)
+  if (games.has(newID)) {
+    res.status(500).end() // The unthinkable has happened
+  }
+  console.log("Generated game:", newID, games.get(newID)?.board)
+
+  games.set(newID, initGame(newID))
+  return res.status(201).json({gameID: newID})
+})
 
 // Expects a query parameter /game?gameID=<uuid>
 app.get("/game", (req, res) => {
