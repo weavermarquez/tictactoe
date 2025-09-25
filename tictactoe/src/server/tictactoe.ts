@@ -102,6 +102,7 @@ function makeMove(game: GameState, player: Player, target: Target): GameState {
   const newWinState = detectWinner(newBoard, newHistory)
 
   const nextGameState: GameState = {
+    gameID: game.gameID,
     player: nextPlayer(game.player),
     board: updateBoard(game.board, player, target),
     status: newWinState,
@@ -116,8 +117,9 @@ const emptyBoard: Board =
        [ '-', '-', '-' ],]; // 2,0  2,1  2,2
 
 
-function initGame(): GameState {
+function initGame(gameID: string): GameState {
   return {
+    gameID,
     player: nextPlayer('-'),
     board: emptyBoard,
     status: {type: 'ongoing'},
