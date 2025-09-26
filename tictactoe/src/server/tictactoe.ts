@@ -127,4 +127,12 @@ function initGame(gameID: string): GameState {
   }
 }
 
-export { type GameState, type Player, type Target, makeMove, initGame}
+export {
+  type GameState,
+  type Player,
+  type Target,
+  type WinState,
+  type Move,
+  makeMove,
+  initGame
+}
