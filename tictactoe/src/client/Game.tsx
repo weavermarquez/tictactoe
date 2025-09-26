@@ -10,11 +10,8 @@ import gameService from '../services/request'
 function Game(props) {
   const queryClient = useQueryClient()
 
-  // console.log(props['navigate'])
-  // props.navigate('')
-
   const { isPending, error, data } = useQuery({
-    queryKey: ['game'.concat(props.selectedGameID)],
+    queryKey: ['game', props.gameID],
     queryFn: gameService.getGame
   })
 
@@ -22,7 +19,7 @@ function Game(props) {
     mutationFn: gameService.postMove,
     onSuccess: () => {
       // Invalidate and refetch
-      queryClient.invalidateQueries({ queryKey: ['game'.concat(props.selectedGameID)] })
+      queryClient.invalidateQueries({ queryKey: ['game', props.gameID] })
     },
   })
 
@@ -31,10 +28,15 @@ function Game(props) {
 
   if (error) return 'An error has occurred: ' + error.message
 
-  const gamestate = data
+  const gamestate = data as GameState
 
   function handleClick(row: number, col: number) {
-    mutation.mutate({player: gamestate.player, target: {row: row, col: col}})
+    console.log("clicked on", row, col, gamestate.gameID)
+    mutation.mutate({
+      gameID: props.gameID,
+      player: gamestate.player,
+      target: {row: row, col: col}
+    })
   }
 
   return (

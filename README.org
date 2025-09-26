@@ -143,6 +143,8 @@ merge to main
 
 ** Day 4
 :LOGBOOK:
+CLOCK: [2025-09-25 Thu 20:50]--[2025-09-25 Thu 21:36] =>  0:46
+CLOCK: [2025-09-25 Thu 20:10]--[2025-09-25 Thu 20:49] =>  0:39
 CLOCK: [2025-09-25 Thu 17:49]--[2025-09-25 Thu 18:14] =>  0:25
 CLOCK: [2025-09-25 Thu 15:40]--[2025-09-25 Thu 16:05] =>  0:25
 CLOCK: [2025-09-25 Thu 15:00]--[2025-09-25 Thu 15:25] =>  0:25
@@ -162,6 +164,8 @@ pom 4 (3 pm): study lyra's css; plan out new frontend structure
 4:20 - 5:10 swing! and nap.
 5:10 - 5:50 clarify and talk w claude
 pom 5 (5:50 pm): implement conditional rendering.
+pom 6 (8:10 - 8:50): got lobby entering game working!
+pom 7: get functionality returning to normal!
 
 - [X] Now we need to support multiple games.
   new feature branch: =dev-multigame-server=
@@ -177,13 +181,16 @@ client-code has ~window.crypto.randomUUID()~, but node.js (server) has
 - [X] Add a list of games: GET /games and a create game endpoint: /create
   merge to main?
 
-- [ ] Now we need to allow a user to pick a game:
+- [X] Now we need to allow a user to pick a game:
   from main, new feature branch =dev-multigame-react=
-  - Create a new Lobby, test out create game and enter game buttons.
-  - [ ] Add a new "pick/create game" component that displays initially
-  - [ ] Once a game ID is selected, display the normal tic-tac-toe component
+  - [X] new Lobby component
+  - [X] Conditional rendering in App between Lobby vs. Game
+    - [X] Create game, enter game in Lobby
+    - [X] Back-button in Game
+  - [X] Add a new "pick/create game" component that displays initially
+  - [X] Once a game ID is selected, display the normal tic-tac-toe component
 
-- [ ] Goal State:
-  - [ ] your game allows users to join an existing game or start a new one
-  - [ ] each tic-tac-toe game functions as normal (detects winners, ties, etc.)
-  - [ ] states persist between chrome tab refreshes, but not server restarts
+- [X] Goal State:
+  - [X] your game allows users to join an existing game or start a new one
+  - [X] each tic-tac-toe game functions as normal (detects winners, ties, etc.)
+  - [X] states persist between chrome tab refreshes, but not server restarts

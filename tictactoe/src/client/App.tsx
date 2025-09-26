@@ -17,6 +17,14 @@ function App() {
 
   return (
     <>
+      <header>
+        {
+          selectedGameID ?
+          <button onClick={(() => setSelectedGameID(''))}>Back to Lobby</button>
+          : <h1 id="title" className="font-bold underline">Tic Tac Toe</h1>
+        }
+      </header>
+
       <QueryClientProvider client={queryClient}>
         {
           selectedGameID ?

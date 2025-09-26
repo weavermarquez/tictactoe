@@ -2,7 +2,7 @@ type Player = 'X' | 'O' | '-';
 type Board = Array<Array<Player>>
 
 type Target = {row: number, col: number}
-type Move = {id: number, player: Player, target: Target,}
+type Move = {id: number, player: Player, target: Target}
 
 type GameState = {
   gameID: string,
