@@ -1,18 +1,21 @@
-//e.g server.js
 import crypto from "crypto"
 import express from "express";
 import ViteExpress from "vite-express";
 import { makeMove, initGame, type GameState } from './tictactoe'
+import dbService from '../services/db'
 
 const app = express();
 app.use(express.json())
 
-let games: Map<string, GameState> = new Map()
+// let games: Map<string, GameState> = new Map()
 
-app.get("/message", (_, res) => res.send("Hello from express! Blah"));
-app.get("/games", (_, res) => res.send([...games.keys()]));
+app.get("/games", (_, res) => {
+  const games = await dbService.getKeys()
+  return res.send([...games.keys()])
+});
 
 app.post("/create", (_, res) => {
+
   const newID = crypto.randomUUID()
   if (games.has(newID)) {
     res.status(500).end() // The unthinkable has happened
@@ -45,7 +48,7 @@ app.post("/move", (req, res) => {
     return res.status(404).end()
     // Game does not exist
   } else {
-    const gamestate = games.get(gameID)
+    const gamestate = games.get(gameID)!
 
     const newGamestate = makeMove(gamestate, player, target)
     games.set(gameID, newGamestate)
