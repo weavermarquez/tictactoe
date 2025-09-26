@@ -7,7 +7,7 @@
     "client": "vite",
     "s-push": "bunx drizzle-kit push",
     "s-migrate": "bunx drizzle-kit migrate",
-    "s-test": "bunx tsx src/index.ts",
+    "s-test": "bunx tsx src/services/db.ts",
     "dev": "bun run --watch ./src/server/main.ts",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
