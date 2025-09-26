@@ -197,10 +197,12 @@ client-code has ~window.crypto.randomUUID()~, but node.js (server) has
 
 ** Day 5
 :LOGBOOK:
+CLOCK: [2025-09-26 Fri 10:14]--[2025-09-26 Fri 10:38] =>  0:24
 CLOCK: [2025-09-26 Fri 09:30]--[2025-09-26 Fri 10:04] =>  0:34
 :END:
 
 pom 1: Preparing today's notes, setting intentions, tutor context, task breakdown.
+pom 2: polling, conditional polling
 
 goals
 - Polling: 20–30 min 1 pom
@@ -210,16 +212,20 @@ goals
 
 
 *** Polling
+
 - Since you’re already on React Query, using setInterval in the component is brittle (cleanup, double intervals, stale closures, multiple tabs). React Query can poll for you via query options, tied to tab visibility.
 - Concept: make the game query refetch itself every N ms while the game is ongoing. Stop when status is winner/draw, or when the component unmounts.
 - Sanity checks:
   - What interval feels responsive but not spammy (e.g., 1–2s)?
   - What happens in two tabs if both poll and both try to move at once? Where is “turn validity” enforced?
-
-#+begin_example
+- [X] Set refetchInterval
+  #+begin_example
 refetchInterval: number | false | ((query: Query) => number | false | undefined)
 Optional
 If set to a number, all queries will continuously refetch at this frequency in milliseconds
 If set to a function, the function will be executed with the query to compute a frequency
+  #+end_example
 
-#+end_example
+  Oh, okay. That's super simple. But I need to conditionally disable polling when the game is over.
+
+*** DB MVP
