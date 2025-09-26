@@ -7,11 +7,14 @@ import axios from 'axios'
 import gameService from '../services/request'
 
 
-function Game() {
+function Game(props) {
   const queryClient = useQueryClient()
 
+  // console.log(props['navigate'])
+  // props.navigate('')
+
   const { isPending, error, data } = useQuery({
-    queryKey: ['game'],
+    queryKey: ['game'.concat(props.selectedGameID)],
     queryFn: gameService.getGame
   })
 
@@ -19,7 +22,7 @@ function Game() {
     mutationFn: gameService.postMove,
     onSuccess: () => {
       // Invalidate and refetch
-      queryClient.invalidateQueries({ queryKey: ['game'] })
+      queryClient.invalidateQueries({ queryKey: ['game'.concat(props.selectedGameID)] })
     },
   })
 
