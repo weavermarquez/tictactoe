@@ -203,6 +203,8 @@ CLOCK: [2025-09-26 Fri 09:30]--[2025-09-26 Fri 10:04] =>  0:34
 
 pom 1: Preparing today's notes, setting intentions, tutor context, task breakdown.
 pom 2: polling, conditional polling
+lecture: db, drizzle
+pom 3: set up supabase, learn and experiment w drizzle
 
 goals
 - Polling: 20–30 min 1 pom
@@ -210,6 +212,9 @@ goals
 - Aesthetics: 30–45 min 2 poms
 - Demo feature: 45–60 min 2-3 poms
 
+Stretch goals
+- Websockets
+- Self-hosted VPS Hetzner w/ Postgres Docker?
 
 *** Polling
 
@@ -229,3 +234,18 @@ If set to a function, the function will be executed with the query to compute a 
   Oh, okay. That's super simple. But I need to conditionally disable polling when the game is over.
 
 *** DB MVP
+- [X] Sign up for Supabase; save URL and PW.
+
+
+- [ ] Draft a DB Schema
+  - [ ] Set up Schema with Drizzle
+
+Set up drizzle
+Install postgres package
+#+begin_example bash
+bun add drizzle-orm postgres dotenv
+bun add -D drizzle-kit tsx
+#+end_example
+
+
+Set up connection vars
