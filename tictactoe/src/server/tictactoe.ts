@@ -1,5 +1,6 @@
-type Player = 'X' | 'O' | '-';
-type Board = Array<Array<Player>>
+type Player = 'X' | 'O';
+type Cell = Player | '-';
+type Board = Array<Array<Cell>>
 
 type Target = {row: number, col: number}
 type Move = {id: number, player: Player, target: Target}
@@ -7,15 +8,18 @@ type Move = {id: number, player: Player, target: Target}
 type GameState = {
   gameID: string,
   player: Player,
-  board: Board
-  status: WinState
-  history: Array<Move>
+  board: Board,
+  status: WinState,
+  history: Array<Move>,
+  createdAt: string,
+  updatedAt: string
 }
 
 type WinState = {type: 'winner', player: Player} | {type: 'draw'} | {type: 'ongoing'}
 
 
 function nextPlayer (player: Player): Player {
+
   switch (player) {
     case 'X': return 'O'
 
@@ -29,14 +33,14 @@ function nextMoveId(game: GameState): number {
   return game.history.length + 1
 }
 
-function cell(board: Board, coord: Target): Player {
+function cell(board: Board, coord: Target): Cell {
   return board[coord.row][coord.col]
 }
 
 /*
  * @returns {Board} The `board` with `target` cell changed to `player`
  */
-function updateBoard(board: Board, player: Player, target: Target): Array<Array<Player>> {
+function updateBoard(board: Board, player: Player, target: Target): Array<Array<Cell>> {
   return board.map( (row, rowIndex) =>
     target.row == rowIndex ?
       row.map( (cell, cellIndex) => target.col == cellIndex ? player : cell )
@@ -62,7 +66,7 @@ function detectWinner(board: Board, history: Array<Move>): WinState {
     [board[0][2], board[1][1], board[2][0]],
   ];
 
-  function allEqual (arr: Player[]) {return arr.every(val => val === arr[0])}
+  function allEqual (arr: Cell[]) {return arr.every(val => val === arr[0])}
   const winPattern = patterns.find( pattern => (allEqual(pattern) && pattern[0] !== '-'))
 
   if (winPattern) {
@@ -133,6 +137,7 @@ export {
   type Target,
   type WinState,
   type Move,
+  type Cell,
   makeMove,
   initGame
 }
