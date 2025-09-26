@@ -197,6 +197,8 @@ client-code has ~window.crypto.randomUUID()~, but node.js (server) has
 
 ** Day 5
 :LOGBOOK:
+CLOCK: [2025-09-26 Fri 12:00]
+CLOCK: [2025-09-26 Fri 10:50]--[2025-09-26 Fri 11:45] =>  0:55
 CLOCK: [2025-09-26 Fri 10:14]--[2025-09-26 Fri 10:38] =>  0:24
 CLOCK: [2025-09-26 Fri 09:30]--[2025-09-26 Fri 10:04] =>  0:34
 :END:
@@ -204,7 +206,10 @@ CLOCK: [2025-09-26 Fri 09:30]--[2025-09-26 Fri 10:04] =>  0:34
 pom 1: Preparing today's notes, setting intentions, tutor context, task breakdown.
 pom 2: polling, conditional polling
 lecture: db, drizzle
-pom 3: set up supabase, learn and experiment w drizzle
+pom 3: set up supabase; follow drizzle tutorial, get conflicting info
+chatted w eqan a bit
+pom 4: clarify mental model with drizzle-supabase; found better tutorial and notified cohort :)
+12:30 grab lunch
 
 goals
 - Polling: 20–30 min 1 pom
@@ -234,18 +239,56 @@ If set to a function, the function will be executed with the query to compute a 
   Oh, okay. That's super simple. But I need to conditionally disable polling when the game is over.
 
 *** DB MVP
+- [X] Create a Supabase project; copy the Postgres connection string. Keep secrets in .env and out of git.
+- [ ] Install Drizzle + a Postgres driver (e.g., postgres.js or node-postgres). Connect with SSL and (ideally) the pooled connection (pgBouncer) in Supabase.
+- [ ] Write schema.ts (tables for your app).
+- [ ] Run drizzle-kit generate to produce a migration, then drizzle-kit migrate to apply it.
+- [ ] Replace your in-memory Map operations in Express routes with Drizzle queries/updates.
+- [ ] Frontend stays the same (React Query still hits your API). Now the state survives server restarts.
 - [X] Sign up for Supabase; save URL and PW.
 
 
 - [ ] Draft a DB Schema
   - [ ] Set up Schema with Drizzle
 
-Set up drizzle
-Install postgres package
+**** Set up drizzle
+❗ Dont' follow steps 1-4 here: https://orm.drizzle.team/docs/get-started/supabase-new
+
+Install packages
 #+begin_example bash
 bun add drizzle-orm postgres dotenv
 bun add -D drizzle-kit tsx
 #+end_example
 
+Set up .env file with supabase url & key
+Add the basic src/index.ts, src/db/schema.ts, and ./drizzle.config.ts files
 
-Set up connection vars
+stop any vite processes then
+Apply changes to the db:
+#+begin_example
+bunx drizzle-kit push
+#+end_example
+
+Hmm, some sort of timeout.
+I found this alternative guide here:
+
+https://supabase.com/docs/guides/database/drizzle
+
+And it works! Sweet! Step 6 onwards now..
+#+begin_example
+bunx drizzle-kit push
+#+end_example
+
+And I can see the changes updated.
+
+Some tasks I can perform:
+https://orm.drizzle.team/docs/kit-overview
+#+begin_example bash
+bunx drizzle-kit generate
+bunx drizzle-kit migrate
+bunx drizzle-kit push
+bunx drizzle-kit pull
+bunx drizzle-kit check
+bunx drizzle-kit up
+bunx drizzle-kit studio
+#+end_example
