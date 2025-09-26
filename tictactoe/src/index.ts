@@ -3,7 +3,10 @@ import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
 
 import { eq } from 'drizzle-orm';
-import { usersTable } from './db/schema';
+import { tabGames, tabMoves } from './db/schema';
+import crypto from 'crypto'
+
+import { type GameState } from './server/tictactoe';
 
 const connectionString = process.env.DATABASE_URL!
 
@@ -12,6 +15,11 @@ export const client = postgres(connectionString, { prepare: false })
 export const db = drizzle(client);
 
 async function main() {
+  gameTest()
+}
+
+
+async function userTest () {
   const user: typeof usersTable.$inferInsert = {
     name: 'John',
     age: 30,

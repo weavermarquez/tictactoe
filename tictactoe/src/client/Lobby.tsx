@@ -44,15 +44,15 @@ function Lobby(props) {
         </button>
         <ol>
           {
-            gamesList.map(gameID => 
-              <li key={gameID}>
-                <div>
-                {gameID}
-                <button onClick={(() => props.navigate(gameID))}>
-                  Enter Game
-                </button>
-                </div>
-              </li>)
+            gamesList.map(entry =>
+            <li key={entry.gameID}>
+              <div>
+                {entry.gameID}
+                <button onClick={(() => props.navigate(entry.gameID))}>
+                Enter Game
+              </button>
+              </div>
+            </li>)
           }
         </ol>
       </div>

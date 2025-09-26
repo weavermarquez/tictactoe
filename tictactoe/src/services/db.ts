@@ -5,7 +5,8 @@ import postgres from 'postgres'
 import { eq } from 'drizzle-orm';
 import { tabGames, tabMoves } from '../db/schema';
 
-import { type GameState } from '../server/tictactoe';
+import { type GameState, initGame, makeMove } from '../server/tictactoe';
+import crypto from "crypto"
 
 const connectionString = process.env.DATABASE_URL!
 
@@ -13,36 +14,52 @@ const connectionString = process.env.DATABASE_URL!
 export const client = postgres(connectionString, { prepare: false })
 export const db = drizzle(client);
 
-async function getKeys(): Promise<string[]> {
-  // - Select id, status, current_player,
-  // updated_at (for ordering). Maybe filter by status if you like.
-  let games: {gameID: string} = await db.select({
-    gameID: tabGames.gameID,
-  }).from(tabGames)
-  return games
-}
-
-  // let games: {
-  //     gameID: string;
-  //     currentPlayer: "X" | "O";
-  //     status: "winner" | "draw" | "ongoing";
-  //     winner: "X" | "O" | null;
-  //     board: Cell[][];
-  // }[]
-
-
-const firstGameID: string = crypto.randomUUID()
-
-const initialGameState = {
-  gameID: firstGameID,
+const initialGameState: GameState = {
+  // gameID: null,
   player: "X",
   board: [['-','-','-'],['-','-','-'],['-','-','-']],
   status: {status: 'ongoing'},
   history: []
 }
 
-function gameStateToDB(gs: GameState): typeof gamesTable.$inferInsert {
-  const gameData: typeof gamesTable.$inferInsert = {
+
+function prepareNewEntry(): typeof tabGames.$inferInsert  {
+  return {
+    gameID: crypto.randomUUID(),
+    currentPlayer: 'X',
+    status: 'ongoing',
+    board: [['-','-','-'],['-','-','-'],['-','-','-']],
+    winner: null,
+  }
+}
+
+function addJunkData () {
+  const newEntry = { ...prepareNewEntry() }
+  Promise.resolve(db.insert(tabGames).values(newEntry))
+}
+
+async function getGames() {
+  return await db.select({gameID: tabGames.gameID}).from(tabGames)
+}
+
+async function makeNewGame(): Promise<string> {
+  const newEntry = { ...prepareNewEntry() }
+  const returnedEntry = await db.insert(tabGames).values(newEntry)
+    .returning({gameID: tabGames.gameID})
+  return returnedEntry[0].gameID
+}
+
+async function getGameState(gameID: string){
+  // if (await db.$count(tabGames, eq(tabGames.gameID, gameID))) <= 0 {
+  //   return false
+  // }
+  const gamestate = await db.select().from(tabGames).where(eq(tabGames.gameID, gameID))
+  console.log("got gamestate", gamestate[0])
+  return gamestate[0]
+}
+
+function gameStateToDB(gs: GameState): typeof tabGames.$inferInsert {
+  const gameData: typeof tabGames.$inferInsert = {
     gameID: gs.gameID,
     currentPlayer: gs.player,
     status: gs.status.type,
@@ -56,7 +73,7 @@ function gameStateToDB(gs: GameState): typeof gamesTable.$inferInsert {
 }
 
 async function gameTest() {
-  const initialGameStateAsDB: typeof gamesTable.$inferInsert = {
+  const initialGameStateAsDB: typeof tabGames.$inferInsert = {
     gameID: firstGameID,
     currentPlayer: 'X',
     status: 'ongoing',
@@ -68,28 +85,28 @@ async function gameTest() {
 
   const game = initialGameStateAsDB
 
-  await db.insert(gamesTable).values(game);
+  await db.insert(tabGames).values(game);
   console.log('New game created!')
 
-  let games = await db.select().from(gamesTable);
+  let games = await db.select().from(tabGames);
   console.log('Getting all games from the database: ', games)
   games.map( g => {console.log('board', g.board)})
 
   await db
-    .update(gamesTable)
+    .update(tabGames)
     .set({
       board: [['-','X','-'],['-','-','-'],['-','-','-']],
       currentPlayer: 'O',
     })
-    .where(eq(gamesTable.gameID, firstGameID));
+    .where(eq(tabGames.gameID, firstGameID));
   console.log('Game info updated!')
 
 
-  games = await db.select().from(gamesTable);
+  games = await db.select().from(tabGames);
   console.log('Getting all games from the database: ', games)
   games.map( g => {console.log('board', g.board)})
 
-  await db.delete(gamesTable).where(eq(gamesTable.gameID, firstGameID));
+  await db.delete(tabGames).where(eq(tabGames.gameID, firstGameID));
   console.log('Game deleted!')
 }
 
@@ -126,4 +143,10 @@ async function userTest () {
 
   await db.delete(usersTable).where(eq(usersTable.email, user.email));
   console.log('User deleted!')
+}
+
+export default {
+  getGames: getGames,
+  makeNewGame: makeNewGame,
+  getGameState: getGameState
 }
