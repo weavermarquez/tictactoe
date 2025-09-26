@@ -197,7 +197,9 @@ client-code has ~window.crypto.randomUUID()~, but node.js (server) has
 
 ** Day 5
 :LOGBOOK:
-CLOCK: [2025-09-26 Fri 16:05]
+CLOCK: [2025-09-26 Fri 17:43]
+CLOCK: [2025-09-26 Fri 17:00]--[2025-09-26 Fri 17:39] =>  0:39
+CLOCK: [2025-09-26 Fri 16:05]--[2025-09-26 Fri 16:40] =>  0:35
 CLOCK: [2025-09-26 Fri 15:40]--[2025-09-26 Fri 16:05] =>  0:25
 CLOCK: [2025-09-26 Fri 14:30]--[2025-09-26 Fri 15:20] =>  0:50
 CLOCK: [2025-09-26 Fri 12:00]--[2025-09-26 Fri 12:33] =>  0:33
@@ -206,17 +208,20 @@ CLOCK: [2025-09-26 Fri 10:14]--[2025-09-26 Fri 10:38] =>  0:24
 CLOCK: [2025-09-26 Fri 09:30]--[2025-09-26 Fri 10:04] =>  0:34
 :END:
 
-pom 1: Preparing today's notes, setting intentions, tutor context, task breakdown.
-pom 2: polling, conditional polling
-lecture: db, drizzle
-pom 3: set up supabase; follow drizzle tutorial, get conflicting info
-chatted w eqan a bit
-pom 4: clarify mental model with drizzle-supabase; found better tutorial and notified cohort :)
-12:30-1:20 grab lunch
-1:30 - 2:30 helping Hyun Joo?
-pom 5: brainstorm schema
-pom 6: draft schema in code
-pom 7: test schema, migrate server code
+pomodoros
+- pom 1: Preparing today's notes, setting intentions, tutor context, task breakdown.
+- pom 2: polling, conditional polling
+- lecture: db, drizzle
+- pom 3: set up supabase; follow drizzle tutorial, get conflicting info
+- chatted w eqan a bit
+- pom 4: clarify mental model with drizzle-supabase; found better tutorial and notified cohort :)
+- 12:30-1:20 grab lunch
+- 1:30 - 2:30 helping Hyun Joo?
+- pom 5: brainstorm schema
+- pom 6: draft schema in code
+- pom 7: replace provided usertest querying with game querying
+- pom 8: migrate server =/games= to db call
+- pom 9:
 
 
 goals
