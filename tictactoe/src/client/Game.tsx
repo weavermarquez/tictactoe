@@ -10,9 +10,18 @@ import gameService from '../services/request'
 function Game(props) {
   const queryClient = useQueryClient()
 
+  let gamestate: GameState
+
+  function pollInterval(): number | false {
+    if (!gamestate)
+      return false
+    return gamestate.status.type == 'ongoing' ? 500 : false
+  }
+
   const { isPending, error, data } = useQuery({
     queryKey: ['game', props.gameID],
-    queryFn: gameService.getGame
+    queryFn: gameService.getGame,
+    refetchInterval: pollInterval
   })
 
   const mutation = useMutation({
@@ -28,7 +37,7 @@ function Game(props) {
 
   if (error) return 'An error has occurred: ' + error.message
 
-  const gamestate = data as GameState
+  gamestate = data as GameState
 
   function handleClick(row: number, col: number) {
     console.log("clicked on", row, col, gamestate.gameID)
