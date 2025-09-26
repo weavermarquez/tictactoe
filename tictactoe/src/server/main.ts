@@ -14,7 +14,6 @@ app.get("/games", (_, res) => res.send([...games.keys()]));
 
 app.post("/create", (_, res) => {
   const newID = crypto.randomUUID()
-  console.log(newID)
   if (games.has(newID)) {
     res.status(500).end() // The unthinkable has happened
   }
@@ -41,14 +40,15 @@ app.get("/game", (req, res) => {
 
 app.post("/move", (req, res) => {
   const {gameID, player, target} = req.body;
+
   if (!games.has(gameID)) {
     return res.status(404).end()
     // Game does not exist
   } else {
     const gamestate = games.get(gameID)
-    console.log("game", gameID, "player", player, "moved at", target)
 
     const newGamestate = makeMove(gamestate, player, target)
+    games.set(gameID, newGamestate)
     res.status(200).json(newGamestate)
   }
 });

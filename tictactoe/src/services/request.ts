@@ -1,18 +1,33 @@
 import axios from 'axios'
 import { type GameState, type Player, type Target} from '../server/tictactoe.ts'
 
-const BASE_URL = 'http://localhost:3000/';
+const BASE_URL = 'http://localhost:3000';
 
-function getGame(gameID: string): Promise<GameState> {
-  return axios.get(BASE_URL.concat('game?=', gameID))
-    .then( res => res.data )
+async function getGame({queryKey}): Promise<GameState> {
+  const [, gameID] = queryKey;
+  return (await axios.get(BASE_URL.concat('/game?gameID=', gameID))).data
 }
 
-function postMove(newMove: {gameID: string, player: Player, target: Target}) {
-  return axios.post(BASE_URL.concat('move'), newMove)
+
+async function getGamesList(): Promise<Array<string>> {
+  return (await axios.get(BASE_URL.concat('/games'))).data
+}
+
+
+async function postMove(newMove): Promise<GameState> {
+  console.log("postmove", newMove)
+  const {gameID, player, target} = newMove;
+  return (await axios.post(BASE_URL.concat('/move'), newMove)).data
+}
+
+function postCreateGame(): Promise<string> {
+  return axios.post(BASE_URL.concat('/create'))
+    .then( res => res.data )
 }
 
 export default {
   getGame: getGame,
-  postMove: postMove
+  postMove: postMove,
+  createGame: postCreateGame,
+  getGamesList: getGamesList
 }
