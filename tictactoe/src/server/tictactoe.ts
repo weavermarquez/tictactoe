@@ -106,14 +106,16 @@ function makeMove(game: GameState, player: Player, target: Target): GameState {
   // const currentMove: Move = {moveCount: nextMoveCount(game), player, target}
 
   const newBoard = updateBoard(game.board, player, target)
-  const { newStatus, newWinner } = detectWinner(newBoard)
+  const { status, winner } = detectWinner(newBoard)
 
   const nextGameState: GameState = {
     gameID: game.gameID,
     player: nextPlayer(game.player),
     board: updateBoard(game.board, player, target),
-    status: newStatus,
-    winner: newWinner,
+    status,
+    winner,
+    createdAt: null,
+    updatedAt: null
   }
   return nextGameState
 }
