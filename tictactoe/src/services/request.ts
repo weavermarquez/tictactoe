@@ -5,9 +5,9 @@ const BASE_URL = 'http://localhost:3000';
 
 async function getGame({queryKey}): Promise<GameState> {
   const [, gameID] = queryKey;
-  const bruh = (await axios.get(BASE_URL.concat('/game?gameID=', gameID)))
-  console.log("request/getGame", bruh)
-  return bruh
+  const gamestate = (await axios.get(BASE_URL.concat('/game?gameID=', gameID))).data
+  console.log("request/getGame", gamestate)
+  return gamestate
 }
 
 

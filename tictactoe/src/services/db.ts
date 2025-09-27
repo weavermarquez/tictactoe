@@ -2,11 +2,12 @@ import 'dotenv/config'
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
 
-import { eq } from 'drizzle-orm';
-// import { tabGames, tabMoves } from '../db/schema';
-import * as schema from '../db/schema';
+import { eq, asc } from 'drizzle-orm';
+import { tabGames, tabMoves } from '../db/schema';
+// import * as schema from '../db/schema';
+const schema = {tabGames, tabMoves}
 
-import { type GameState, initGame, makeMove } from '../server/tictactoe';
+import { type GameState, type Player, type Target, initGame, makeMove } from '../server/tictactoe';
 import crypto from "crypto"
 
 const connectionString = process.env.DATABASE_URL!
@@ -37,18 +38,64 @@ async function getGames() {
 async function makeNewGame(): Promise<string> {
   const newEntry = { ...prepareNewEntry() }
   const returnedEntry = await db.insert(tabGames).values(newEntry)
-    .returning({gameID: tabGames.gameID})
+    .returning({ gameID: tabGames.gameID });
   return returnedEntry[0].gameID
 }
 
 async function getGameState(gameID: string){
-  // if (await db.$count(tabGames, eq(tabGames.gameID, gameID))) <= 0 {
-  //   return false
-  // }
-  const gamestate = await db.select().from(tabGames).where(eq(tabGames.gameID, gameID))
-  console.log("got gamestate", gamestate[0])
-  return gamestate[0]
+  return await db.query.tabGames.findFirst({
+    where: eq(tabGames.gameID, gameID)
+  })
 }
+
+async function getMoveHistory(gameID: string){
+  return await db.query.tabMoves.findMany({
+    where: eq(tabMoves.gameID, gameID),
+    orderBy: [asc(tabMoves.moveNumber)],
+  })
+}
+
+
+type Move = {id: number, player: Player, target: Target}
+async function addMove(gameID: string, player: Player, target: Target){
+
+  const oldMoveHistory = await getMoveHistory(gameID)
+  const oldGameState = await getGameState(gameID)
+  if (oldGameState?.status != 'ongoing') {
+    return oldGameState
+  }
+
+  await db.insert(tabMoves).values({
+    gameID: gameID,
+    player: player,
+    target: target
+  })
+
+  // Add a move to DB
+  // update gamestate on DB
+  // const gamestate = games.get(gameID)!
+
+  // const newGameState = makeMove({
+  //   ...oldGameState,
+  //   history: oldMoveHistory.map( (oldMove) => {
+  //     return {
+  //       id: oldMove.moveNumber,
+  //       player: oldMove.player,
+  //       target: oldMove.target,
+  //     }
+  //   }),
+  // }, player, target)
+
+  const updatedDBGameState = await db.update(tabGames)
+  .set({ ...newGameState })
+  .where(eq(users.name, 'Dan'))
+  .returning({ updatedId: users.id });
+
+  return await getGameState(gameID)
+  // toGameState(updatedDBGameState)
+
+}
+
 
 function gameStateToDB(gs: GameState): typeof tabGames.$inferInsert {
   const gameData: typeof tabGames.$inferInsert = {

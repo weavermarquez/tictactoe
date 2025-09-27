@@ -29,27 +29,13 @@ app.get("/game", async (req, res) => {
   }
   const returnedGameState = await dbService.getGameState(gameID)
   return res.json(returnedGameState)
-
-  // if (!checkExists(gameID)) {
-  //   return res.status(404).end()
-  //   // Game does not exist
-  // }
-  // return res.json(dbService.retrieveGame(gameID))
 });
 
-app.post("/move", (req, res) => {
+app.post("/move", async (req, res) => {
   const {gameID, player, target} = req.body;
+  const returnedGameState = await dbService.addMove(gameID, player, target)
 
-  if (!games.has(gameID)) {
-    return res.status(404).end()
-    // Game does not exist
-  } else {
-    const gamestate = games.get(gameID)!
-
-    const newGamestate = makeMove(gamestate, player, target)
-    games.set(gameID, newGamestate)
-    res.status(200).json(newGamestate)
-  }
+  res.status(200).json(returnedGameState)
 });
 
 
