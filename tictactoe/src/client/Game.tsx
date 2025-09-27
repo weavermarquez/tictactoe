@@ -16,7 +16,7 @@ function Game(props) {
   function pollInterval(): number | false {
     if (!gamestate)
       return false
-    return gamestate.status == 'ongoing' ? 500 : false
+    return gamestate.status == 'ongoing' ? 2000 : false
   }
 
   const { isPending, error, data } = useQuery({
@@ -41,6 +41,9 @@ function Game(props) {
   gamestate = data as GameState
 
   function handleClick(row: number, col: number) {
+    if (gamestate.status != 'ongoing') {
+      return
+    }
     console.log("clicked on", row, col, gamestate.gameID)
     mutation.mutate({
       gameID: props.gameID,
