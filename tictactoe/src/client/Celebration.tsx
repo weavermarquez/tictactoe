@@ -1,10 +1,11 @@
 export function Celebration(props) {
     const status = props.status;
+    const winner = props.winner;
     const currentPlayer = props.currentPlayer;
     return(
         <>
             <div id="status">{(() => {
-                switch (status.type) {
+                switch (status) {
                     case 'ongoing':
                         return `Your move, player ${currentPlayer}`;
                         break;
@@ -12,7 +13,7 @@ export function Celebration(props) {
                         return "Hey, a draw! Let's say you both won. 🤗";
                         break;
                     case 'winner':
-                        return `🎉 Congratulations, player ${status.player}! 🎉`;
+                        return `🎉 Congratulations, player ${winner}! 🎉`;
                 }
             })()}
             </div>

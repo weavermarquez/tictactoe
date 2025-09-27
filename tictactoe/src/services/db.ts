@@ -15,23 +15,13 @@ const connectionString = process.env.DATABASE_URL!
 export const client = postgres(connectionString, { prepare: false })
 export const db = drizzle({ client, schema });
 
-
-const initialGameState: GameState = {
-  // gameID: null,
-  player: "X",
-  board: [['-','-','-'],['-','-','-'],['-','-','-']],
-  status: {status: 'ongoing'},
-  history: []
-}
-
-
 function prepareNewEntry(): typeof tabGames.$inferInsert  {
+  const historyList: Move[] = []
   return {
     gameID: crypto.randomUUID(),
-    currentPlayer: 'X',
+    player: 'X',
     status: 'ongoing',
     board: [['-','-','-'],['-','-','-'],['-','-','-']],
-    winner: null,
   }
 }
 
@@ -63,9 +53,9 @@ async function getGameState(gameID: string){
 function gameStateToDB(gs: GameState): typeof tabGames.$inferInsert {
   const gameData: typeof tabGames.$inferInsert = {
     gameID: gs.gameID,
-    currentPlayer: gs.player,
-    status: gs.status.type,
-    winner: gs.status.type == 'winner' ? gs.status.player : null,
+    player: gs.player,
+    status: gs.status,
+    winner: gs.winner,
     board: gs.board,
     createdAt: null,
     updatedAt: null,

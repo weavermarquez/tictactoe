@@ -15,7 +15,7 @@ function Game(props) {
   function pollInterval(): number | false {
     if (!gamestate)
       return false
-    return gamestate.status.type == 'ongoing' ? 500 : false
+    return gamestate.status == 'ongoing' ? 500 : false
   }
 
   const { isPending, error, data } = useQuery({
@@ -65,11 +65,11 @@ function Game(props) {
             ) }
           </div>
         </div>
-        <Celebration currentPlayer = {gamestate.player} status={gamestate.status} />
-        <ol type='A'>
-          { gamestate.history.map(e =>
-            <li key={e.id}>{e.id}. Player {e.player} on {e.target.row},{e.target.col}</li>) }
-        </ol>
+        <Celebration
+          currentPlayer={gamestate.player}
+          winner={gamestate.winner}
+          status={gamestate.status} />
+        <History />
       </div>
     </>
   )
