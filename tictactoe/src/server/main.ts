@@ -9,13 +9,11 @@ app.use(express.json())
 
 app.get("/games", async (_, res) => {
   let gamesList = await dbService.getGames()
-  console.log("/games gamesList", gamesList)
   return res.send(gamesList)
 });
 
 app.post("/create", async (_, res) => {
   const newGameID = await dbService.makeNewGame()
-  console.log('from /create', newGameID)
   return res.status(201).json({gameID: newGameID})
 })
 

@@ -212,21 +212,21 @@ CLOCK: [2025-09-26 Fri 09:30]--[2025-09-26 Fri 10:04] =>  0:34
 :END:
 
 pomodoros
-- pom 1: Preparing today's notes, setting intentions, tutor context, task breakdown.
-- pom 2: polling, conditional polling
+- pom 1 :: Preparing today's notes, setting intentions, tutor context, task breakdown.
+- pom 2 :: polling, conditional polling
 - lecture: db, drizzle
-- pom 3: set up supabase; follow drizzle tutorial, get conflicting info
+- pom 3 :: set up supabase; follow drizzle tutorial, get conflicting info
 - chatted w eqan a bit
-- pom 4: clarify mental model with drizzle-supabase; found better tutorial and notified cohort :)
-- 12:30-1:20 grab lunch
-- 1:30 - 2:30 helping Hyun Joo?
-- pom 5: brainstorm schema
-- pom 6: draft schema in code
-- pom 7: replace provided usertest querying with game querying
-- pom 8: migrate server =/games= to db call
-- pom 9/10: attempting to fix the remaining two routes
-- 8:45-10: implement the remaining routes?
-- 11-11:40: remove history from type GameState
+- pom 4 :: clarify mental model with drizzle-supabase; found better tutorial and notified cohort :)
+- 12:30-1:20 :: grab lunch
+- 1:30 - 2:30 :: helping Hyun Joo?
+- pom 5 :: brainstorm schema
+- pom 6 :: draft schema in code
+- pom 7 :: replace provided usertest querying with game querying
+- pom 8 :: migrate server =/games= to db call
+- pom 9/10 :: attempting to fix the remaining two routes
+- pom 11,12,13 ::  8:45-10: implement the remaining routes?
+- pom 14 :: 11-11:40: remove history from type GameState
   .... it works, but oh my god it's SLOW 😱
 
 Weaver's note to self:

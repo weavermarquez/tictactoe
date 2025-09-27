@@ -2,7 +2,7 @@ import 'dotenv/config'
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
 
-import { eq, asc } from 'drizzle-orm';
+import { eq, asc, sql } from 'drizzle-orm';
 import { tabGames, tabMoves } from '../db/schema';
 // import * as schema from '../db/schema';
 const schema = {tabGames, tabMoves}
@@ -60,28 +60,28 @@ async function getMoveHistory(gameID: string){
 }
 
 async function addMove(gameID: string, player: Player, target: Target): GameState {
-  const oldGameState = await getGameState(gameID)!
-
-  await db.insert(tabMoves).values({
-    gameID: gameID,
-    player: player,
-    target: target
-  })
-
-  const newMoveHistory = await getMoveHistory(gameID)
-
-  // Add a move to DB
-  // update gamestate on DB
-  // const gamestate = games.get(gameID)!
+  const oldGameState = await getGameState(gameID)
 
   const newGameState = makeMove({...oldGameState} as GameState, player, target)
+  if (newGameState == oldGameState) {
+    return oldGameState as GameState
+  }
+  else {
+    await db.insert(tabMoves).values({
+      gameID: gameID,
+      player: player,
+      target: target
+    })
 
-  const updatedDBGameState: GameState = await db.update(tabGames)
-    .set({ ...newGameState })
-    .where(eq(tabGames.gameID, gameID))
-    .returning()
+    await db.update(tabGames)
+      .set({ ...newGameState,
+        updatedAt: sql`NOW()`
+      })
+      .where(eq(tabGames.gameID, gameID))
 
-  return updatedDBGameState
+    return newGameState
+
+  }
 }
 
 
