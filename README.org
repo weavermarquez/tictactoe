@@ -197,19 +197,49 @@ client-code has ~window.crypto.randomUUID()~, but node.js (server) has
 
 ** Day 5
 :LOGBOOK:
+CLOCK: [2025-09-26 Fri 23:00]--[2025-09-26 Fri 23:31] =>  0:31
+CLOCK: [2025-09-26 Fri 20:45]--[2025-09-26 Fri 22:57] =>  2:12
+CLOCK: [2025-09-26 Fri 18:08]--[2025-09-26 Fri 19:02] =>  0:54
+CLOCK: [2025-09-26 Fri 17:43]--[2025-09-26 Fri 18:08] =>  0:25
+CLOCK: [2025-09-26 Fri 17:00]--[2025-09-26 Fri 17:39] =>  0:39
+CLOCK: [2025-09-26 Fri 16:05]--[2025-09-26 Fri 16:40] =>  0:35
+CLOCK: [2025-09-26 Fri 15:40]--[2025-09-26 Fri 16:05] =>  0:25
+CLOCK: [2025-09-26 Fri 14:30]--[2025-09-26 Fri 15:20] =>  0:50
+CLOCK: [2025-09-26 Fri 12:00]--[2025-09-26 Fri 12:33] =>  0:33
+CLOCK: [2025-09-26 Fri 10:50]--[2025-09-26 Fri 11:45] =>  0:55
 CLOCK: [2025-09-26 Fri 10:14]--[2025-09-26 Fri 10:38] =>  0:24
 CLOCK: [2025-09-26 Fri 09:30]--[2025-09-26 Fri 10:04] =>  0:34
 :END:
 
-pom 1: Preparing today's notes, setting intentions, tutor context, task breakdown.
-pom 2: polling, conditional polling
+pomodoros
+- pom 1: Preparing today's notes, setting intentions, tutor context, task breakdown.
+- pom 2: polling, conditional polling
+- lecture: db, drizzle
+- pom 3: set up supabase; follow drizzle tutorial, get conflicting info
+- chatted w eqan a bit
+- pom 4: clarify mental model with drizzle-supabase; found better tutorial and notified cohort :)
+- 12:30-1:20 grab lunch
+- 1:30 - 2:30 helping Hyun Joo?
+- pom 5: brainstorm schema
+- pom 6: draft schema in code
+- pom 7: replace provided usertest querying with game querying
+- pom 8: migrate server =/games= to db call
+- pom 9/10: attempting to fix the remaining two routes
+- 8:45-10: implement the remaining routes?
+- 11-11:40: remove history from type GameState
+  .... it works, but oh my god it's SLOW 😱
+
+Weaver's note to self:
+#+begin_quote
+Friend, this is a messy pull request. I would have appreciated several smaller pull requests into a separate dev-db-migration branch. But it's functional.
+
+But -- why the hell is it so slow? Is that your code or is that Supabase? Don't you want to add an "optimistic" client code?
+#+end_quote
+
 
 goals
-- Polling: 20–30 min 1 pom
-- DB (MVP): 60–90 min 4 poms
-- Aesthetics: 30–45 min 2 poms
-- Demo feature: 45–60 min 2-3 poms
-
+- [X] Polling: 20–30 min 1 pom
+- [X] DB (MVP): 60–90 min 4 poms (actual: 12 poms)
 
 *** Polling
 
@@ -229,3 +259,78 @@ If set to a function, the function will be executed with the query to compute a 
   Oh, okay. That's super simple. But I need to conditionally disable polling when the game is over.
 
 *** DB MVP
+- [X] Create a Supabase project; copy the Postgres connection string. Keep secrets in .env and out of git.
+- [X] Install Drizzle + a Postgres driver (e.g., postgres.js or node-postgres). Connect with SSL and (ideally) the pooled connection (pgBouncer) in Supabase.
+- [X] Add ~bunx tsx src/index.ts~ to bun script ~bun run s-push / s-migrate / s-test~
+- [ ] Write schema.ts (tables for your app).
+- [ ] Run drizzle-kit generate to produce a migration, then drizzle-kit migrate to apply it.
+- [ ] Replace your in-memory Map operations in Express routes with Drizzle queries/updates.
+- [ ] Frontend stays the same (React Query still hits your API). Now the state survives server restarts.
+- [X] Sign up for Supabase; save URL and PW.
+
+
+  A) Single games table: columns for game_id (PK), player (current turn), board (JSONB), status (text/enum), history (JSONB).
+     - Pros: fastest to ship; mirrors your GameState; perfect for demo; supports replay easily.
+     - Cons: less relational, but fine for now.
+  B) games + moves tables:
+     - Pros: relational, scalable; easier to query history.
+     - Cons: more migration/queries today.
+- For demo speed, I recommend A today; you can refactor to B later.
+
+
+- [ ] Draft a DB Schema
+  - [ ] Set up Schema with Drizzle
+
+**** Set up drizzle
+❗ Dont' follow steps 1-4 here: https://orm.drizzle.team/docs/get-started/supabase-new
+
+Install packages
+#+begin_example bash
+bun add drizzle-orm postgres dotenv
+bun add -D drizzle-kit tsx
+#+end_example
+
+Set up .env file with supabase url & key
+Add the basic src/index.ts, src/db/schema.ts, and ./drizzle.config.ts files
+
+stop any vite processes then
+Apply changes to the db:
+#+begin_example
+bunx drizzle-kit push
+#+end_example
+
+Hmm, some sort of timeout.
+I found this alternative guide here:
+
+https://supabase.com/docs/guides/database/drizzle
+
+And it works! Sweet! Step 6 onwards now..
+#+begin_example
+bunx drizzle-kit push
+#+end_example
+
+And I can see the changes updated.
+
+Some tasks I can perform:
+https://orm.drizzle.team/docs/kit-overview
+#+begin_example bash
+bunx drizzle-kit generate
+bunx drizzle-kit migrate
+bunx drizzle-kit push
+bunx drizzle-kit pull
+bunx drizzle-kit check
+bunx drizzle-kit up
+bunx drizzle-kit studio
+#+end_example
+
+**** Write tables for Tic Tac Toe
+
+** Day 6
+Demos begin at 1 PM.
+
+- Aesthetics: 30–45 min 2 poms
+- Demo feature: 45–60 min 2-3 poms
+
+Stretch goals
+- Websockets
+- Self-hosted VPS Hetzner w/ Postgres Docker?

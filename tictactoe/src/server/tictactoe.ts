@@ -1,19 +1,26 @@
-type Player = 'X' | 'O' | '-';
-type Board = Array<Array<Player>>
+type Player = 'X' | 'O';
+type Cell = Player | '-';
+type Status = 'winner' | 'draw' | 'ongoing';
+type Board = Array<Array<Cell>>
 
 type Target = {row: number, col: number}
-type Move = {id: number, player: Player, target: Target}
+type Move = {
+  gameID: string | null,
+  moveCount: number,
+  player: Player,
+  target: Target,
+  createdAt: Date | null,
+}
 
 type GameState = {
   gameID: string,
   player: Player,
-  board: Board
-  status: WinState
-  history: Array<Move>
+  board: Board,
+  status: Status,
+  winner: Player | null,
+  createdAt: Date | null,
+  updatedAt: Date | null
 }
-
-type WinState = {type: 'winner', player: Player} | {type: 'draw'} | {type: 'ongoing'}
-
 
 function nextPlayer (player: Player): Player {
   switch (player) {
@@ -25,18 +32,15 @@ function nextPlayer (player: Player): Player {
   }
 }
 
-function nextMoveId(game: GameState): number {
-  return game.history.length + 1
-}
 
-function cell(board: Board, coord: Target): Player {
+function cell(board: Board, coord: Target): Cell {
   return board[coord.row][coord.col]
 }
 
 /*
  * @returns {Board} The `board` with `target` cell changed to `player`
  */
-function updateBoard(board: Board, player: Player, target: Target): Array<Array<Player>> {
+function updateBoard(board: Board, player: Player, target: Target): Array<Array<Cell>> {
   return board.map( (row, rowIndex) =>
     target.row == rowIndex ?
       row.map( (cell, cellIndex) => target.col == cellIndex ? player : cell )
@@ -45,8 +49,8 @@ function updateBoard(board: Board, player: Player, target: Target): Array<Array<
 }
 
 
-function detectWinner(board: Board, history: Array<Move>): WinState {
-  const MAX_LENGTH = 9
+function detectWinner(board: Board): {status: Status, winner: Player | null} {
+  const MAX_TURNS= 9
 
   const patterns = [
     //horizontals
@@ -62,23 +66,27 @@ function detectWinner(board: Board, history: Array<Move>): WinState {
     [board[0][2], board[1][1], board[2][0]],
   ];
 
-  function allEqual (arr: Player[]) {return arr.every(val => val === arr[0])}
+  function allEqual (arr: Cell[]) {return arr.every(val => val === arr[0])}
   const winPattern = patterns.find( pattern => (allEqual(pattern) && pattern[0] !== '-'))
+
+  const turnCount = board.flat().filter(cell => cell != '-').length
+
+    // .filter(cell => cell == '-')
 
   if (winPattern) {
     console.log("Found a winner!", winPattern[0])
-    return {type: 'winner', player: winPattern[0]}
-  } else if (history.length == MAX_LENGTH) {
-    return {type: 'draw'}
+    return {status: 'winner', winner: winPattern[0] as Player}
+  } else if (turnCount == MAX_TURNS) {
+    return {status: 'draw', winner: null }
   } else {
-    return {type: 'ongoing'}
+    return {status: 'ongoing', winner: null }
   }
 }
 
 function makeMove(game: GameState, player: Player, target: Target): GameState {
-  const MAX_HISTORY = 9
+  const MAX_TURNS = 9
 
-  if (game.status.type == 'winner'){
+  if (game.status == 'winner'){
     return game
   }
   if (!(target.row < 3 && target.row >= 0 && target.col < 3 && target.col >= 0)){
@@ -95,18 +103,17 @@ function makeMove(game: GameState, player: Player, target: Target): GameState {
     // what to do? Reset game? return initGame()?
   }
 
-  const currentMove: Move = {id: nextMoveId(game), player, target}
+  // const currentMove: Move = {moveCount: nextMoveCount(game), player, target}
 
   const newBoard = updateBoard(game.board, player, target)
-  const newHistory = [...game.history, currentMove]
-  const newWinState = detectWinner(newBoard, newHistory)
+  const { newStatus, newWinner } = detectWinner(newBoard)
 
   const nextGameState: GameState = {
     gameID: game.gameID,
     player: nextPlayer(game.player),
     board: updateBoard(game.board, player, target),
-    status: newWinState,
-    history: [...game.history, currentMove]
+    status: newStatus,
+    winner: newWinner,
   }
   return nextGameState
 }
@@ -122,9 +129,17 @@ function initGame(gameID: string): GameState {
     gameID,
     player: nextPlayer('-'),
     board: emptyBoard,
-    status: {type: 'ongoing'},
-    history: []
+    status: 'ongoing',
   }
 }
 
-export { type GameState, type Player, type Target, makeMove, initGame}
+export {
+  type GameState,
+  type Player,
+  type Target,
+  type Status,
+  type Move,
+  type Cell,
+  makeMove,
+  initGame
+}

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { makeMove, type GameState } from '../server/tictactoe'
 import Celebration from './Celebration.tsx'
 import Square from './Square.tsx'
+import History from './History'
 import { QueryClient, QueryClientProvider, useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 import gameService from '../services/request'
@@ -15,7 +16,7 @@ function Game(props) {
   function pollInterval(): number | false {
     if (!gamestate)
       return false
-    return gamestate.status.type == 'ongoing' ? 500 : false
+    return gamestate.status == 'ongoing' ? 500 : false
   }
 
   const { isPending, error, data } = useQuery({
@@ -65,11 +66,11 @@ function Game(props) {
             ) }
           </div>
         </div>
-        <Celebration currentPlayer = {gamestate.player} status={gamestate.status} />
-        <ol type='A'>
-          { gamestate.history.map(e =>
-            <li key={e.id}>{e.id}. Player {e.player} on {e.target.row},{e.target.col}</li>) }
-        </ol>
+        <Celebration
+          currentPlayer={gamestate.player}
+          winner={gamestate.winner}
+          status={gamestate.status} />
+        <History />
       </div>
     </>
   )
