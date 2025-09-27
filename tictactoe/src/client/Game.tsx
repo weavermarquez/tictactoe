@@ -3,6 +3,7 @@ import { makeMove, type GameState } from '../server/tictactoe'
 import Celebration from './Celebration.tsx'
 import Square from './Square.tsx'
 import History from './History'
+import Replay from './Replay'
 import { QueryClient, QueryClientProvider, useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 import gameService from '../services/request'
@@ -30,6 +31,7 @@ function Game(props) {
     onSuccess: () => {
       // Invalidate and refetch
       queryClient.invalidateQueries({ queryKey: ['game', props.gameID] })
+      queryClient.invalidateQueries({ queryKey: ['moves', props.gameID] })
     },
   })
 
@@ -52,31 +54,44 @@ function Game(props) {
     })
   }
 
-  return (
-    <>
-      <div id="game">
-        <div id="board">
-          <div id='rows' className='flex-col'>
-            { gamestate.board.map((row, r) =>
-              <div key={'row'.concat(String(r))} className='flex'>
-                { gamestate.board[r].map((col, c) =>
-                  <Square value={col}
-                    key={''.concat(r,c)}
-                    r={r} c={c}
-                      onSquareClick={ () => handleClick(r, c)}
-                    />)}
-              </div>
-            ) }
+  if (gamestate.status != 'ongoing') {
+    return (
+      <>
+        <Replay gamestate={gamestate}/>
+      </>
+    )
+  }
+  else {
+    return (
+      <>
+        <div id="game">
+          <div id="board">
+            <div id='rows' className='flex-col'>
+              { gamestate.board.map((row, r) =>
+                <div key={'row'.concat(String(r))} className='flex'>
+                  { gamestate.board[r].map((col, c) =>
+                    <Square value={col}
+                      key={''.concat(r,c)}
+                      r={r} c={c}
+                        onSquareClick={ () => handleClick(r, c)}
+                      />)}
+                </div>
+              ) }
+            </div>
           </div>
+          <Celebration
+            currentPlayer={gamestate.player}
+            winner={gamestate.winner}
+            status={gamestate.status} />
+          <QueryClientProvider client={queryClient}>
+            <History
+              gameID={gamestate.gameID} />
+          </QueryClientProvider>
         </div>
-        <Celebration
-          currentPlayer={gamestate.player}
-          winner={gamestate.winner}
-          status={gamestate.status} />
-        <History />
-      </div>
-    </>
-  )
+      </>
+    )
+  }
+
 }
 
 export default Game

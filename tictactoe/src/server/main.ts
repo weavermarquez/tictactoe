@@ -29,7 +29,6 @@ app.get("/game", async (req, res) => {
   return res.json(returnedGameState)
 });
 
-// TODO Move
 app.post("/move", async (req, res) => {
   const {gameID, player, target} = req.body;
   const oldGameState = await dbService.getGameState(gameID)
@@ -41,6 +40,19 @@ app.post("/move", async (req, res) => {
   const returnedGameState = await dbService.addMove(gameID, player, target)
 
   return res.status(200).json(returnedGameState)
+});
+
+
+app.get("/moves", async (req, res) => {
+  const gameID: string = req.query.gameID
+
+  if (!gameID) {
+    return res.status(400).end()
+    // Malformed Request
+  }
+
+  const moveHistory = await dbService.getMoveHistory(gameID)
+  return res.json(moveHistory)
 });
 
 

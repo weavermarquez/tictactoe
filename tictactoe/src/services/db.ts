@@ -137,9 +137,12 @@ async function gameTest() {
   console.log('Game deleted!')
 }
 
+
+
 export default {
   getGames,
   makeNewGame,
   getGameState,
-  addMove
+  addMove,
+  getMoveHistory
 }
