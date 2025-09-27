@@ -8,7 +8,7 @@ function History(props) {
   return (
     <>
       <ol type='A'>
-      { gamestate.history.map(e =>
+      { history.map(e =>
         <li key={e.id}>{e.id}. Player {e.player} on {e.target.row},{e.target.col}</li>) }
       </ol>
     </>

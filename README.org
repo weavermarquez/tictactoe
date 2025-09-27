@@ -229,16 +229,17 @@ pomodoros
 - 11-11:40: remove history from type GameState
   .... it works, but oh my god it's SLOW 😱
 
+Weaver's note to self:
+#+begin_quote
+Friend, this is a messy pull request. I would have appreciated several smaller pull requests into a separate dev-db-migration branch. But it's functional.
+
+But -- why the hell is it so slow? Is that your code or is that Supabase? Don't you want to add an "optimistic" client code?
+#+end_quote
+
 
 goals
-- Polling: 20–30 min 1 pom
-- DB (MVP): 60–90 min 4 poms
-- Aesthetics: 30–45 min 2 poms
-- Demo feature: 45–60 min 2-3 poms
-
-Stretch goals
-- Websockets
-- Self-hosted VPS Hetzner w/ Postgres Docker?
+- [X] Polling: 20–30 min 1 pom
+- [X] DB (MVP): 60–90 min 4 poms (actual: 12 poms)
 
 *** Polling
 
@@ -325,19 +326,11 @@ bunx drizzle-kit studio
 **** Write tables for Tic Tac Toe
 
 ** Day 6
-What is Working:
-- [X] Get list of Games
-- [X] Get Gamestate
-- [X] Create New Game
-  [[file:tictactoe/src/server/main.ts::// TODO Create]]
-  #+begin_quote
-Error: Failed query: insert into "tabGames" ("gameID", "player", "status", "winner", "board", "createdAt", "updatedAt") values ($1, default, $2, $3, $4, default, default) returning "gameID"
-params: 82d03d77-8968-41d7-8bba-24faae891194,ongoing,,[["-","-","-"],["-","-","-"],["-","-","-"]]
-at queryWithCache (/var/home/kwalerie/Documents/org/30-fractal/tictactoe/tictactoe/node_modules/drizzle-orm/pg-core/session.js:41:19)
-at processTicksAndRejections (native:7:39)
-  #+end_quote
+Demos begin at 1 PM.
 
-What ain't working:
-- [ ] Add new Move
-  [[file:tictactoe/src/server/main.ts::// TODO Move]]
-  addMove is not exported.
+- Aesthetics: 30–45 min 2 poms
+- Demo feature: 45–60 min 2-3 poms
+
+Stretch goals
+- Websockets
+- Self-hosted VPS Hetzner w/ Postgres Docker?
