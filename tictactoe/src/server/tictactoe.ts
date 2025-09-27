@@ -18,8 +18,8 @@ type GameState = {
   board: Board,
   status: Status,
   winner: Player | null,
-  createdAt: string | null,
-  updatedAt: string | null
+  createdAt: Date | null,
+  updatedAt: Date | null
 }
 
 function nextPlayer (player: Player): Player {

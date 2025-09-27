@@ -31,11 +31,18 @@ app.get("/game", async (req, res) => {
   return res.json(returnedGameState)
 });
 
+// TODO Move
 app.post("/move", async (req, res) => {
   const {gameID, player, target} = req.body;
+  const oldGameState = await dbService.getGameState(gameID)
+  if (oldGameState!.status != 'ongoing') {
+    return res.status(403).end()
+    // Forbidden
+  }
+
   const returnedGameState = await dbService.addMove(gameID, player, target)
 
-  res.status(200).json(returnedGameState)
+  return res.status(200).json(returnedGameState)
 });
 
 

@@ -7,7 +7,7 @@ import { tabGames, tabMoves } from '../db/schema';
 // import * as schema from '../db/schema';
 const schema = {tabGames, tabMoves}
 
-import { type GameState, type Player, type Target, initGame, makeMove } from '../server/tictactoe';
+import { type GameState, type Player, type Move, type Target, initGame, makeMove } from '../server/tictactoe';
 import crypto from "crypto"
 
 const connectionString = process.env.DATABASE_URL!
@@ -26,9 +26,13 @@ function prepareNewEntry(): typeof tabGames.$inferInsert  {
   }
 }
 
+function prepareNewMove(gameID: string, player: Player, target: Target): typeof tabMoves.$inferInsert  {
+  return {gameID, player, target}
+}
+
 function addJunkData () {
   const newEntry = { ...prepareNewEntry() }
-  Promise.resolve(db.insert(tabGames).values(newEntry))
+  db.insert(tabGames).values(newEntry).then(() => {console.log('added junk')})
 }
 
 async function getGames() {
@@ -51,19 +55,12 @@ async function getGameState(gameID: string){
 async function getMoveHistory(gameID: string){
   return await db.query.tabMoves.findMany({
     where: eq(tabMoves.gameID, gameID),
-    orderBy: [asc(tabMoves.moveNumber)],
+    orderBy: [asc(tabMoves.moveCount)],
   })
 }
 
-
-type Move = {id: number, player: Player, target: Target}
-async function addMove(gameID: string, player: Player, target: Target){
-
-  const oldMoveHistory = await getMoveHistory(gameID)
-  const oldGameState = await getGameState(gameID)
-  if (oldGameState?.status != 'ongoing') {
-    return oldGameState
-  }
+async function addMove(gameID: string, player: Player, target: Target): GameState {
+  const oldGameState = await getGameState(gameID)!
 
   await db.insert(tabMoves).values({
     gameID: gameID,
@@ -71,29 +68,20 @@ async function addMove(gameID: string, player: Player, target: Target){
     target: target
   })
 
+  const newMoveHistory = await getMoveHistory(gameID)
+
   // Add a move to DB
   // update gamestate on DB
   // const gamestate = games.get(gameID)!
 
-  // const newGameState = makeMove({
-  //   ...oldGameState,
-  //   history: oldMoveHistory.map( (oldMove) => {
-  //     return {
-  //       id: oldMove.moveNumber,
-  //       player: oldMove.player,
-  //       target: oldMove.target,
-  //     }
-  //   }),
-  // }, player, target)
+  const newGameState = makeMove({...oldGameState} as GameState, player, target)
 
-  const updatedDBGameState = await db.update(tabGames)
-  .set({ ...newGameState })
-  .where(eq(users.name, 'Dan'))
-  .returning({ updatedId: users.id });
+  const updatedDBGameState: GameState = await db.update(tabGames)
+    .set({ ...newGameState })
+    .where(eq(tabGames.gameID, gameID))
+    .returning()
 
-  return await getGameState(gameID)
-  // toGameState(updatedDBGameState)
-
+  return updatedDBGameState
 }
 
 
@@ -150,7 +138,8 @@ async function gameTest() {
 }
 
 export default {
-  getGames: getGames,
-  makeNewGame: makeNewGame,
-  getGameState: getGameState
+  getGames,
+  makeNewGame,
+  getGameState,
+  addMove
 }
